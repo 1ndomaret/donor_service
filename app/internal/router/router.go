@@ -26,9 +26,10 @@ func Register(e *echo.Echo,
 	*/
 
 	// TODOS:
-	// GOROUTINE buat cari matches jalan setiap jam
+	// Go Routine match checker buat blood-request jalan setiap jam
+	// - Get donors by blood type, availability, city(?)
 
-	// POST /blood-requests
+	// POST /blood-requests <-- autorun match checker pertama after create
 	// GET  /blood-requests
 	// GET  /blood-requests/:id
 	// PUT  /blood-requests/:id/cancel
