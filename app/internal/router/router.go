@@ -23,9 +23,6 @@ func Register(e *echo.Echo,
 
 		- Buat pendonor dia bisa accept/decline
 			- Auto decline setelah seminggu
-
-		- Kalau dia accept
-
 	*/
 
 	// TODOS:
