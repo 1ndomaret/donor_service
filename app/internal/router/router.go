@@ -29,6 +29,7 @@ func Register(e *echo.Echo,
 	// Go Routine match checker buat blood-request jalan setiap jam
 	// - Get donors by blood type, availability, city(?)
 
+	// A
 	// POST /blood-requests <-- autorun match checker pertama after create
 	// GET  /blood-requests
 	// GET  /blood-requests/:id
@@ -36,6 +37,7 @@ func Register(e *echo.Echo,
 
 	// GET /blood-requests/:id/matches
 
+	// B
 	// POST /blood-requests/:id/invite/:donorId
 
 	// PATCH /donor-matches/:id/accept
