@@ -55,7 +55,7 @@ func (r *donationRepository) FindOne(
 	return &donation, nil
 }
 
-func (r *donationRepository) Complete(
+func (r *donationRepository) Completed(
 	ctx context.Context,
 	donationID uuid.UUID,
 	confirmedBy uuid.UUID,

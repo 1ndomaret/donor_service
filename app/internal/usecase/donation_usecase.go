@@ -90,7 +90,7 @@ func (u *donationUsecase) Create(
 	return donation, nil
 }
 
-func (u *donationUsecase) Complete(
+func (u *donationUsecase) Completed(
 	requesterID uuid.UUID,
 	donationID uuid.UUID,
 ) (*entity.Donation, error) {
@@ -124,7 +124,7 @@ func (u *donationUsecase) Complete(
 
 	now := time.Now()
 
-	if err := u.donationRepo.Complete(
+	if err := u.donationRepo.Completed(
 		ctx,
 		donation.ID,
 		requesterID,

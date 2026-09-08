@@ -28,7 +28,7 @@ func Register(e *echo.Echo,
 	private.PATCH("/donor-matches/:id/accept", donorMatchHandler.Accept)
 	private.PATCH("/donor-matches/:id/decline", donorMatchHandler.Decline)
 	private.POST("/donations", donationHandler.Create)
-	private.PATCH("/donations/:id/complete", donationHandler.Complete)
+	private.PATCH("/donations/:id/complete", donationHandler.Completed)
 
 	/*
 		- Bikin blood-request

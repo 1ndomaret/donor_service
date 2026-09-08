@@ -47,7 +47,7 @@ type DonationUsecase interface {
 		req *DonationReq,
 	) (*entity.Donation, error)
 
-	Complete(
+	Completed(
 		requesterID uuid.UUID,
 		donationID uuid.UUID,
 	) (*entity.Donation, error)

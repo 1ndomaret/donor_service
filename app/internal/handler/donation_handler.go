@@ -73,7 +73,7 @@ func (h *DonationHandler) Create(
 	return helper.Created(c, donation)
 }
 
-func (h *DonationHandler) Complete(
+func (h *DonationHandler) Completed(
 	c *echo.Context,
 ) error {
 
@@ -101,7 +101,7 @@ func (h *DonationHandler) Complete(
 		)
 	}
 
-	donation, err := h.donationUsecase.Complete(
+	donation, err := h.donationUsecase.Completed(
 		requesterID,
 		donationID,
 	)
