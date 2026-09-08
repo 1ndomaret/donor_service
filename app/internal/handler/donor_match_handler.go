@@ -10,19 +10,19 @@ import (
 	"github.com/labstack/echo/v5"
 )
 
-type DonorMatchesHandler struct {
-	donorMatchesUsecase domain.DonorMatchesUsecase
+type DonorMatchHandler struct {
+	donorMatchUsecase domain.DonorMatchUsecase
 }
 
-func NewDonorMatchesHandler(
-	donorMatchesUsecase domain.DonorMatchesUsecase,
-) *DonorMatchesHandler {
-	return &DonorMatchesHandler{
-		donorMatchesUsecase: donorMatchesUsecase,
+func NewDonorMatchHandler(
+	donorMatchUsecase domain.DonorMatchUsecase,
+) *DonorMatchHandler {
+	return &DonorMatchHandler{
+		donorMatchUsecase: donorMatchUsecase,
 	}
 }
 
-func (h *DonorMatchesHandler) Invite(c *echo.Context) error {
+func (h *DonorMatchHandler) Invite(c *echo.Context) error {
 	requesterID, ok := c.Get("user_id").(uuid.UUID)
 	if !ok {
 		return helper.Unauthorized(c, "invalid or missing token")
@@ -38,14 +38,14 @@ func (h *DonorMatchesHandler) Invite(c *echo.Context) error {
 		return helper.BadRequest(c, "invalid donor id")
 	}
 
-	donorMatches, err := h.donorMatchesUsecase.Invite(
+	donorMatch, err := h.donorMatchUsecase.Invite(
 		requesterID,
 		bloodRequestID,
 		donorID,
 	)
 	if err != nil {
 		switch {
-		case errors.Is(err, domain.ErrDonorMatchesNotFound):
+		case errors.Is(err, domain.ErrDonorMatchNotFound):
 			return helper.NotFound(c, err.Error())
 
 		case errors.Is(err, domain.ErrForbidden):
@@ -63,11 +63,11 @@ func (h *DonorMatchesHandler) Invite(c *echo.Context) error {
 		c,
 		200,
 		"Donor invited successfully",
-		donorMatches,
+		donorMatch,
 	)
 }
 
-func (h *DonorMatchesHandler) Accept(c *echo.Context) error {
+func (h *DonorMatchHandler) Accept(c *echo.Context) error {
 	donorID, ok := c.Get("user_id").(uuid.UUID)
 	if !ok {
 		return helper.Unauthorized(c, "invalid or missing token")
@@ -78,13 +78,13 @@ func (h *DonorMatchesHandler) Accept(c *echo.Context) error {
 		return helper.BadRequest(c, "invalid donor match id")
 	}
 
-	donorMatches, err := h.donorMatchesUsecase.Accept(
+	donorMatch, err := h.donorMatchUsecase.Accept(
 		donorID,
 		matchID,
 	)
 	if err != nil {
 		switch {
-		case errors.Is(err, domain.ErrDonorMatchesNotFound):
+		case errors.Is(err, domain.ErrDonorMatchNotFound):
 			return helper.NotFound(c, err.Error())
 
 		case errors.Is(err, domain.ErrForbidden):
@@ -102,11 +102,11 @@ func (h *DonorMatchesHandler) Accept(c *echo.Context) error {
 		c,
 		200,
 		"Invitation accepted",
-		donorMatches,
+		donorMatch,
 	)
 }
 
-func (h *DonorMatchesHandler) Decline(c *echo.Context) error {
+func (h *DonorMatchHandler) Decline(c *echo.Context) error {
 	donorID, ok := c.Get("user_id").(uuid.UUID)
 	if !ok {
 		return helper.Unauthorized(c, "invalid or missing token")
@@ -117,13 +117,13 @@ func (h *DonorMatchesHandler) Decline(c *echo.Context) error {
 		return helper.BadRequest(c, "invalid donor match id")
 	}
 
-	donorMatches, err := h.donorMatchesUsecase.Decline(
+	donorMatch, err := h.donorMatchUsecase.Decline(
 		donorID,
 		matchID,
 	)
 	if err != nil {
 		switch {
-		case errors.Is(err, domain.ErrDonorMatchesNotFound):
+		case errors.Is(err, domain.ErrDonorMatchNotFound):
 			return helper.NotFound(c, err.Error())
 
 		case errors.Is(err, domain.ErrForbidden):
@@ -141,6 +141,6 @@ func (h *DonorMatchesHandler) Decline(c *echo.Context) error {
 		c,
 		200,
 		"Invitation declined",
-		donorMatches,
+		donorMatch,
 	)
 }

@@ -41,7 +41,7 @@ type BloodRequestRepository interface {
 	FindOne(ctx context.Context, userID uuid.UUID, bloodRequestID uuid.UUID) (*entity.BloodRequest, error)
 	Cancel(ctx context.Context, userID uuid.UUID, bloodRequestID uuid.UUID) error
 
-	GetMatches(ctx context.Context, bloodRequestID uuid.UUID) ([]entity.DonorMatches, error)
+	GetMatches(ctx context.Context, bloodRequestID uuid.UUID) ([]entity.DonorMatch, error)
 }
 
 type BloodRequestUsecase interface {
@@ -50,7 +50,7 @@ type BloodRequestUsecase interface {
 	FindOne(userID uuid.UUID, bloodRequestID uuid.UUID) (*entity.BloodRequest, error)
 	Cancel(userID uuid.UUID, bloodRequestID uuid.UUID) error
 
-	GetMatches(bloodRequestID uuid.UUID) ([]entity.DonorMatches, error)
+	GetMatches(bloodRequestID uuid.UUID) ([]entity.DonorMatch, error)
 	SearchMatches(token string, userID uuid.UUID, bloodRequestID uuid.UUID) ([]entity.DonorProfile, error)
 }
 

@@ -69,10 +69,10 @@ func (r *bloodRequestRepository) Cancel(ctx context.Context, userID uuid.UUID, b
 	return nil
 }
 
-func (r *bloodRequestRepository) SearchMatches(ctx context.Context, bloodRequestID uuid.UUID) ([]entity.DonorMatches, error) {
+func (r *bloodRequestRepository) SearchMatches(ctx context.Context, bloodRequestID uuid.UUID) ([]entity.DonorMatch, error) {
 	return nil, nil
 }
 
-func (r *bloodRequestRepository) GetMatches(ctx context.Context, bloodRequestID uuid.UUID) ([]entity.DonorMatches, error) {
+func (r *bloodRequestRepository) GetMatches(ctx context.Context, bloodRequestID uuid.UUID) ([]entity.DonorMatch, error) {
 	return nil, nil
 }
