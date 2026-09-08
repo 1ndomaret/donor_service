@@ -6,6 +6,7 @@ import (
 	"donor-service/app/internal/handler"
 	"donor-service/app/internal/repository"
 	"donor-service/app/internal/router"
+	"donor-service/app/internal/scheduler"
 	"donor-service/app/internal/usecase"
 	"log"
 
@@ -29,6 +30,11 @@ func main() {
 	bloodReqRepository := repository.NewBloodRequestRepository(db)
 	bloodReqUsecase := usecase.NewBloodRequestUsecase(bloodReqRepository)
 	bloodReqHandler := handler.NewBloodRequestHandler(bloodReqUsecase)
+
+	scheduler := scheduler.NewScheduler()
+	if err := scheduler.Start(); err != nil {
+		log.Println(err.Error())
+	}
 
 	e := echo.New()
 
