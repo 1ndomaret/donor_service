@@ -29,13 +29,18 @@ type BloodRequestReq struct {
 	NeededAt           time.Time `json:"needed_at"`
 }
 
+type SearchMatchesRequest struct {
+	BloodType string `query:"blood_type"`
+	City      string `query:"city"`
+}
+
 type BloodRequestRepository interface {
 	Create(ctx context.Context, req *entity.BloodRequest) error
 	FindAll(ctx context.Context, userID uuid.UUID) ([]entity.BloodRequest, error)
 	FindOne(ctx context.Context, userID uuid.UUID, bloodRequestID uuid.UUID) (*entity.BloodRequest, error)
 	Cancel(ctx context.Context, userID uuid.UUID, bloodRequestID uuid.UUID) error
 
-	FindMatches(ctx context.Context, bloodRequestID uuid.UUID) ([]entity.DonorMatches, error)
+	GetMatches(ctx context.Context, bloodRequestID uuid.UUID) ([]entity.DonorMatches, error)
 }
 
 type BloodRequestUsecase interface {
@@ -44,5 +49,10 @@ type BloodRequestUsecase interface {
 	FindOne(userID uuid.UUID, bloodRequestID uuid.UUID) (*entity.BloodRequest, error)
 	Cancel(userID uuid.UUID, bloodRequestID uuid.UUID) error
 
-	FindMatches(bloodRequestID uuid.UUID) ([]entity.DonorMatches, error)
+	GetMatches(bloodRequestID uuid.UUID) ([]entity.DonorMatches, error)
+	SearchMatches(token string, userID uuid.UUID, bloodRequestID uuid.UUID) ([]entity.DonorProfile, error)
+}
+
+type BloodRequestHttpRepo interface {
+	SearchMatches(ctx context.Context, token string, req *SearchMatchesRequest) ([]entity.DonorProfile, error)
 }

@@ -111,6 +111,27 @@ func (h *BloodRequestHandler) Cancel(c *echo.Context) error {
 	return helper.Success(c, 200, "Success", "Request Cancelled")
 }
 
-func (h *BloodRequestHandler) FindMatches(c *echo.Context) error {
-	return nil
+func (h *BloodRequestHandler) GetMatches(c *echo.Context) error {
+	token := c.Request().Header.Get("Authorization")
+	if token == "" {
+		return helper.Unauthorized(c, "missing token")
+	}
+
+	userID, ok := c.Get("user_id").(uuid.UUID)
+	if !ok {
+		return helper.Unauthorized(c, "invalid token")
+	}
+
+	bloodReqID := c.Param("id")
+	reqUUID, err := uuid.Parse(bloodReqID)
+	if err != nil {
+		return helper.Unprocessable(c, "invalid blood request id")
+	}
+
+	profiles, err := h.bloodReqUse.SearchMatches(token, userID, reqUUID)
+	if err != nil {
+		return helper.InternalServerError(c, err.Error())
+	}
+
+	return helper.Success(c, 200, "Success", profiles)
 }

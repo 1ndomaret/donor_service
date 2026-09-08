@@ -5,6 +5,7 @@ import (
 	"donor-service/app/internal/entity"
 	"donor-service/app/internal/handler"
 	"donor-service/app/internal/repository"
+	httpRepo "donor-service/app/internal/repository/http"
 	"donor-service/app/internal/router"
 	"donor-service/app/internal/scheduler"
 	"donor-service/app/internal/usecase"
@@ -28,7 +29,8 @@ func main() {
 	}
 
 	bloodReqRepository := repository.NewBloodRequestRepository(db)
-	bloodReqUsecase := usecase.NewBloodRequestUsecase(bloodReqRepository)
+	bloodReqHttpRepo := httpRepo.NewBloodRequestHttpRepo(config.ServicesSecret())
+	bloodReqUsecase := usecase.NewBloodRequestUsecase(bloodReqRepository, bloodReqHttpRepo)
 	bloodReqHandler := handler.NewBloodRequestHandler(bloodReqUsecase)
 
 	scheduler := scheduler.NewScheduler()

@@ -11,12 +11,14 @@ import (
 )
 
 type bloodReqUsecase struct {
-	bloodReqRepo domain.BloodRequestRepository
+	bloodReqRepo  domain.BloodRequestRepository
+	bloodHttpRepo domain.BloodRequestHttpRepo
 }
 
-func NewBloodRequestUsecase(bloodReqRepo domain.BloodRequestRepository) domain.BloodRequestUsecase {
+func NewBloodRequestUsecase(bloodReqRepo domain.BloodRequestRepository, bloodHttpRepo domain.BloodRequestHttpRepo) domain.BloodRequestUsecase {
 	return &bloodReqUsecase{
-		bloodReqRepo: bloodReqRepo,
+		bloodReqRepo:  bloodReqRepo,
+		bloodHttpRepo: bloodHttpRepo,
 	}
 }
 
@@ -88,6 +90,23 @@ func (u *bloodReqUsecase) Cancel(userID uuid.UUID, BloodRequestID uuid.UUID) err
 	return u.bloodReqRepo.Cancel(ctx, userID, BloodRequestID)
 }
 
-func (u *bloodReqUsecase) FindMatches(BloodRequestID uuid.UUID) ([]entity.DonorMatches, error) {
+func (u *bloodReqUsecase) GetMatches(BloodRequestID uuid.UUID) ([]entity.DonorMatches, error) {
 	return nil, nil
+}
+
+func (u *bloodReqUsecase) SearchMatches(token string, userID uuid.UUID, BloodRequestID uuid.UUID) ([]entity.DonorProfile, error) {
+	ctx, cancel := context.WithTimeout(context.TODO(), timeOut)
+	defer cancel()
+
+	bloodReq, err := u.bloodReqRepo.FindOne(ctx, userID, BloodRequestID)
+	if err != nil {
+		return nil, err
+	}
+
+	filter := domain.SearchMatchesRequest{
+		BloodType: bloodReq.BloodType,
+		City:      bloodReq.City,
+	}
+
+	return u.bloodHttpRepo.SearchMatches(ctx, token, &filter)
 }

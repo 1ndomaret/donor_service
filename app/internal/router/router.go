@@ -20,7 +20,7 @@ func Register(e *echo.Echo,
 	private.GET("/blood-requests", bloodReqHandler.FindAll)
 	private.GET("/blood-requests/:id", bloodReqHandler.FindOne)
 	private.PUT("/blood-requests/:id/cancel", bloodReqHandler.Cancel)
-	private.GET("/blood-requests/:id/matches", bloodReqHandler.FindMatches)
+	private.GET("/blood-requests/:id/matches", bloodReqHandler.GetMatches)
 
 	/*
 		- Bikin blood-request
