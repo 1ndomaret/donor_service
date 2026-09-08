@@ -35,6 +35,10 @@ func (u *bloodReqUsecase) Create(userID uuid.UUID, req *domain.BloodRequestReq) 
 		return nil, domain.ErrInvalidInput
 	}
 
+	if !helper.IsValidBloodType(req.BloodType) {
+		return nil, domain.ErrInvalidBloodType
+	}
+
 	if !helper.IsValidCoord(req.Latitude, req.Longitude) {
 		return nil, domain.ErrInvalidCoord
 	}

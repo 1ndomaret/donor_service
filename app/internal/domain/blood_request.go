@@ -11,6 +11,7 @@ import (
 
 var (
 	ErrInvalidInput     = errors.New("invalid input")
+	ErrInvalidBloodType = errors.New("invalid blood type")
 	ErrInvalidCoord     = errors.New("invalid latitude and longitude coords")
 	ErrInvalidNeededAt  = errors.New("invalid needed at date")
 	ErrBloodReqNotFound = errors.New("blood request not found")
