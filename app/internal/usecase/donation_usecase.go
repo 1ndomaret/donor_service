@@ -11,20 +11,20 @@ import (
 )
 
 type donationUsecase struct {
-	donationRepo     domain.DonationRepository
-	donorMatchesRepo domain.DonorMatchesRepository
-	bloodReqRepo     domain.BloodRequestRepository
+	donationRepo   domain.DonationRepository
+	donorMatchRepo domain.DonorMatchRepository
+	bloodReqRepo   domain.BloodRequestRepository
 }
 
 func NewDonationUsecase(
 	donationRepo domain.DonationRepository,
-	donorMatchesRepo domain.DonorMatchesRepository,
+	donorMatchRepo domain.DonorMatchRepository,
 	bloodReqRepo domain.BloodRequestRepository,
 ) domain.DonationUsecase {
 	return &donationUsecase{
-		donationRepo:     donationRepo,
-		donorMatchesRepo: donorMatchesRepo,
-		bloodReqRepo:     bloodReqRepo,
+		donationRepo:   donationRepo,
+		donorMatchRepo: donorMatchRepo,
+		bloodReqRepo:   bloodReqRepo,
 	}
 }
 
@@ -56,7 +56,7 @@ func (u *donationUsecase) Create(
 		return nil, err
 	}
 
-	donorMatch, err := u.donorMatchesRepo.GetByID(
+	donorMatch, err := u.donorMatchRepo.GetByID(
 		ctx,
 		req.DonorMatchID,
 	)

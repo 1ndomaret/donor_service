@@ -90,7 +90,7 @@ func (u *bloodReqUsecase) Cancel(userID uuid.UUID, BloodRequestID uuid.UUID) err
 	return u.bloodReqRepo.Cancel(ctx, userID, BloodRequestID)
 }
 
-func (u *bloodReqUsecase) GetMatches(BloodRequestID uuid.UUID) ([]entity.DonorMatches, error) {
+func (u *bloodReqUsecase) GetMatches(BloodRequestID uuid.UUID) ([]entity.DonorMatch, error) {
 	return nil, nil
 }
 

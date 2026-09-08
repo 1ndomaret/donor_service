@@ -11,43 +11,43 @@ import (
 	"gorm.io/gorm"
 )
 
-type donorMatchesRepository struct {
+type donorMatchRepository struct {
 	db *gorm.DB
 }
 
-func NewDonorMatchesRepository(db *gorm.DB) domain.DonorMatchesRepository {
-	return &donorMatchesRepository{
+func NewDonorMatchRepository(db *gorm.DB) domain.DonorMatchRepository {
+	return &donorMatchRepository{
 		db: db,
 	}
 }
 
-func (r *donorMatchesRepository) GetByID(
+func (r *donorMatchRepository) GetByID(
 	ctx context.Context,
 	id uuid.UUID,
-) (*entity.DonorMatches, error) {
-	var donorMatches entity.DonorMatches
+) (*entity.DonorMatch, error) {
+	var donorMatch entity.DonorMatch
 
 	if err := r.db.
 		WithContext(ctx).
 		Where("id = ?", id).
-		First(&donorMatches).Error; err != nil {
+		First(&donorMatch).Error; err != nil {
 
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, domain.ErrDonorMatchesNotFound
+			return nil, domain.ErrDonorMatchNotFound
 		}
 
 		return nil, err
 	}
 
-	return &donorMatches, nil
+	return &donorMatch, nil
 }
 
-func (r *donorMatchesRepository) GetByBloodRequestAndDonor(
+func (r *donorMatchRepository) GetByBloodRequestAndDonor(
 	ctx context.Context,
 	bloodRequestID uuid.UUID,
 	donorID uuid.UUID,
-) (*entity.DonorMatches, error) {
-	var donorMatches entity.DonorMatches
+) (*entity.DonorMatch, error) {
+	var donorMatch entity.DonorMatch
 
 	if err := r.db.
 		WithContext(ctx).
@@ -56,26 +56,26 @@ func (r *donorMatchesRepository) GetByBloodRequestAndDonor(
 			bloodRequestID,
 			donorID,
 		).
-		First(&donorMatches).Error; err != nil {
+		First(&donorMatch).Error; err != nil {
 
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, domain.ErrDonorMatchesNotFound
+			return nil, domain.ErrDonorMatchNotFound
 		}
 
 		return nil, err
 	}
 
-	return &donorMatches, nil
+	return &donorMatch, nil
 }
 
-func (r *donorMatchesRepository) UpdateStatus(
+func (r *donorMatchRepository) UpdateStatus(
 	ctx context.Context,
 	id uuid.UUID,
 	status string,
 ) error {
 	return r.db.
 		WithContext(ctx).
-		Model(&entity.DonorMatches{}).
+		Model(&entity.DonorMatch{}).
 		Where("id = ?", id).
 		Update("status", status).
 		Error

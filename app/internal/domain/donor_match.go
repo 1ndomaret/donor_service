@@ -10,22 +10,22 @@ import (
 )
 
 var (
-	ErrDonorMatchesNotFound = errors.New("donor matches not found")
-	ErrForbidden            = errors.New("forbidden")
-	ErrInvalidMatchStatus   = errors.New("invalid donor match status")
+	ErrDonorMatchNotFound = errors.New("donor match not found")
+	ErrForbidden          = errors.New("forbidden")
+	ErrInvalidMatchStatus = errors.New("invalid donor match status")
 )
 
-type DonorMatchesRepository interface {
+type DonorMatchRepository interface {
 	GetByID(
 		ctx context.Context,
 		id uuid.UUID,
-	) (*entity.DonorMatches, error)
+	) (*entity.DonorMatch, error)
 
 	GetByBloodRequestAndDonor(
 		ctx context.Context,
 		bloodRequestID uuid.UUID,
 		donorID uuid.UUID,
-	) (*entity.DonorMatches, error)
+	) (*entity.DonorMatch, error)
 
 	UpdateStatus(
 		ctx context.Context,
@@ -41,20 +41,20 @@ type BloodRequestReader interface {
 	) (*entity.BloodRequest, error)
 }
 
-type DonorMatchesUsecase interface {
+type DonorMatchUsecase interface {
 	Invite(
 		requesterID uuid.UUID,
 		bloodRequestID uuid.UUID,
 		donorID uuid.UUID,
-	) (*entity.DonorMatches, error)
+	) (*entity.DonorMatch, error)
 
 	Accept(
 		donorID uuid.UUID,
 		matchID uuid.UUID,
-	) (*entity.DonorMatches, error)
+	) (*entity.DonorMatch, error)
 
 	Decline(
 		donorID uuid.UUID,
 		matchID uuid.UUID,
-	) (*entity.DonorMatches, error)
+	) (*entity.DonorMatch, error)
 }

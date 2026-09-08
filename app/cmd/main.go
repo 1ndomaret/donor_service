@@ -23,7 +23,7 @@ func main() {
 	if err := db.AutoMigrate(
 		&entity.BloodRequest{},
 		&entity.Donation{},
-		&entity.DonorMatches{},
+		&entity.DonorMatch{},
 	); err != nil {
 		log.Fatal("failed to migrate database:", err)
 	}
@@ -33,11 +33,11 @@ func main() {
 	bloodReqUsecase := usecase.NewBloodRequestUsecase(bloodReqRepository, bloodReqHttpRepo)
 	bloodReqHandler := handler.NewBloodRequestHandler(bloodReqUsecase)
 
-	donorMatchesRepository := repository.NewDonorMatchesRepository(db)
-	donorMatchesUsecase := usecase.NewDonorMatchesUsecase(donorMatchesRepository, bloodReqRepository)
-	donorMatchesHandler := handler.NewDonorMatchesHandler(donorMatchesUsecase)
+	donorMatchRepository := repository.NewDonorMatchRepository(db)
+	donorMatchUsecase := usecase.NewDonorMatchUsecase(donorMatchRepository, bloodReqRepository)
+	donorMatchHandler := handler.NewDonorMatchHandler(donorMatchUsecase)
 	donationRepository := repository.NewDonationRepository(db)
-	donationUsecase := usecase.NewDonationUsecase(donationRepository, donorMatchesRepository, bloodReqRepository)
+	donationUsecase := usecase.NewDonationUsecase(donationRepository, donorMatchRepository, bloodReqRepository)
 	donationHandler := handler.NewDonationHandler(donationUsecase)
 
 	scheduler := scheduler.NewScheduler()
@@ -49,7 +49,7 @@ func main() {
 
 	router.Register(e,
 		bloodReqHandler,
-		donorMatchesHandler,
+		donorMatchHandler,
 		donationHandler,
 	)
 

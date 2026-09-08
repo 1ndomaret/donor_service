@@ -15,12 +15,12 @@ func NewScheduler() *scheduler {
 
 func (s *scheduler) Start() error {
 	log.Println("[CRON] Starting Cron Job...")
-	gocron.Every(1).Hour().Do(s.FindDonorMatches)
+	gocron.Every(1).Hour().Do(s.FindDonorMatch)
 	gocron.Start()
 
 	return nil
 }
 
-func (s *scheduler) FindDonorMatches() {
-	log.Println("[CRON] Finding Donor Matches...")
+func (s *scheduler) FindDonorMatch() {
+	log.Println("[CRON] Finding Donor Match...")
 }

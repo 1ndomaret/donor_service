@@ -6,7 +6,7 @@ import (
 	"github.com/google/uuid"
 )
 
-type DonorMatches struct {
+type DonorMatch struct {
 	ID             uuid.UUID `gorm:"type:uuid;primaryKey" json:"id"`
 	BloodRequestID uuid.UUID `gorm:"type:uuid;uniqueIndex;not null" json:"blood_request_id"`
 	DonorID        uuid.UUID `gorm:"type:uuid;uniqueIndex;not null" json:"donor_id"`

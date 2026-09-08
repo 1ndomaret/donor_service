@@ -59,7 +59,7 @@ func (h *DonationHandler) Create(
 		case errors.Is(err, domain.ErrBloodReqNotFound):
 			return helper.NotFound(c, err.Error())
 
-		case errors.Is(err, domain.ErrDonorMatchesNotFound):
+		case errors.Is(err, domain.ErrDonorMatchNotFound):
 			return helper.NotFound(c, err.Error())
 
 		case errors.Is(err, domain.ErrDonorMatchNotAccepted):
