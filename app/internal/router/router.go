@@ -11,6 +11,7 @@ import (
 func Register(e *echo.Echo,
 	bloodReqHandler *handler.BloodRequestHandler,
 	donorMatchesHandler *handler.DonorMatchesHandler,
+	donationHandler *handler.DonationHandler,
 ) {
 	api := e.Group("/api/v1")
 
@@ -26,6 +27,8 @@ func Register(e *echo.Echo,
 	private.POST("/blood-requests/:id/invite/:donorId", donorMatchesHandler.Invite)
 	private.PATCH("/donor-matches/:id/accept", donorMatchesHandler.Accept)
 	private.PATCH("/donor-matches/:id/decline", donorMatchesHandler.Decline)
+	private.POST("/donations", donationHandler.Create)
+	private.PATCH("/donations/:id/complete", donationHandler.Complete)
 
 	/*
 		- Bikin blood-request
