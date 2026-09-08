@@ -10,7 +10,10 @@ import (
 )
 
 var (
-	ErrInvalidInput = errors.New("invalid input")
+	ErrInvalidInput     = errors.New("invalid input")
+	ErrInvalidCoord     = errors.New("invalid latitude and longitude coords")
+	ErrInvalidNeededAt  = errors.New("invalid needed at date")
+	ErrBloodReqNotFound = errors.New("blood request not found")
 )
 
 type BloodRequestReq struct {
@@ -23,24 +26,23 @@ type BloodRequestReq struct {
 	Latitude           float64   `json:"latitude"`
 	Longitude          float64   `json:"longitude"`
 	Notes              string    `json:"notes"`
-	Status             string    `json:"status"`
 	NeededAt           time.Time `json:"needed_at"`
 }
 
 type BloodRequestRepository interface {
 	Create(ctx context.Context, req *entity.BloodRequest) error
-	FindAll(ctx context.Context) ([]entity.BloodRequest, error)
-	FindOne(ctx context.Context, BloodRequestID uuid.UUID) (*entity.BloodRequest, error)
-	Cancel(ctx context.Context, BloodRequestID uuid.UUID) error
+	FindAll(ctx context.Context, userID uuid.UUID) ([]entity.BloodRequest, error)
+	FindOne(ctx context.Context, userID uuid.UUID, bloodRequestID uuid.UUID) (*entity.BloodRequest, error)
+	Cancel(ctx context.Context, userID uuid.UUID, bloodRequestID uuid.UUID) error
 
-	FindMatches(ctx context.Context, BloodRequestID uuid.UUID) ([]entity.DonorMatches, error)
+	FindMatches(ctx context.Context, bloodRequestID uuid.UUID) ([]entity.DonorMatches, error)
 }
 
 type BloodRequestUsecase interface {
-	Create(req *BloodRequestReq) (*entity.BloodRequest, error)
-	FindAll() ([]entity.BloodRequest, error)
-	FindOne(BloodRequestID uuid.UUID) (*entity.BloodRequest, error)
-	Cancel(BloodRequestID uuid.UUID) error
+	Create(userID uuid.UUID, req *BloodRequestReq) (*entity.BloodRequest, error)
+	FindAll(userID uuid.UUID) ([]entity.BloodRequest, error)
+	FindOne(userID uuid.UUID, bloodRequestID uuid.UUID) (*entity.BloodRequest, error)
+	Cancel(userID uuid.UUID, bloodRequestID uuid.UUID) error
 
-	FindMatches(BloodRequestID uuid.UUID) ([]entity.DonorMatches, error)
+	FindMatches(bloodRequestID uuid.UUID) ([]entity.DonorMatches, error)
 }

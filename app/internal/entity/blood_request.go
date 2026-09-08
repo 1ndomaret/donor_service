@@ -8,7 +8,7 @@ import (
 
 type BloodRequest struct {
 	ID                 uuid.UUID `gorm:"type:uuid;primaryKey" json:"id"`
-	RequesterID        uuid.UUID `gorm:"type:uuid;uniqueIndex;not null" json:"requester_id"`
+	RequesterID        uuid.UUID `gorm:"type:uuid;Index;not null" json:"requester_id"`
 	BloodType          string    `gorm:"not null" json:"blood_type"`
 	Quantity           int       `gorm:"not null" json:"quantity"`
 	Urgency            string    `gorm:"not null" json:"urgency"`

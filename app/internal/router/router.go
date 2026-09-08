@@ -18,8 +18,8 @@ func Register(e *echo.Echo,
 
 	private.POST("/blood-requests", bloodReqHandler.Create)
 	private.GET("/blood-requests", bloodReqHandler.FindAll)
-	private.GET("/blood-requests", bloodReqHandler.FindOne)
-	private.PUT("/blood-requests/:id", bloodReqHandler.Cancel)
+	private.GET("/blood-requests/:id", bloodReqHandler.FindOne)
+	private.PUT("/blood-requests/:id/cancel", bloodReqHandler.Cancel)
 	private.GET("/blood-requests/:id/matches", bloodReqHandler.FindMatches)
 
 	/*

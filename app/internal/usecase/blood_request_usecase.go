@@ -1,8 +1,11 @@
 package usecase
 
 import (
+	"context"
 	"donor-service/app/internal/domain"
 	"donor-service/app/internal/entity"
+	"donor-service/app/internal/helper"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -17,20 +20,72 @@ func NewBloodRequestUsecase(bloodReqRepo domain.BloodRequestRepository) domain.B
 	}
 }
 
-func (u *bloodReqUsecase) Create(req *domain.BloodRequestReq) (*entity.BloodRequest, error) {
-	return nil, nil
+var timeOut = 10 * time.Second
+
+func (u *bloodReqUsecase) Create(userID uuid.UUID, req *domain.BloodRequestReq) (*entity.BloodRequest, error) {
+	if req.BloodType == "" ||
+		req.Quantity <= 0 ||
+		req.Urgency == "" ||
+		req.HospitalExternalID == "" ||
+		req.HospitalName == "" ||
+		req.City == "" ||
+		req.NeededAt.IsZero() {
+		return nil, domain.ErrInvalidInput
+	}
+
+	if !helper.IsValidCoord(req.Latitude, req.Longitude) {
+		return nil, domain.ErrInvalidCoord
+	}
+
+	if req.NeededAt.Before(time.Now()) {
+		return nil, domain.ErrInvalidNeededAt
+	}
+
+	bloodReq := &entity.BloodRequest{
+		ID:                 uuid.New(),
+		RequesterID:        userID,
+		BloodType:          req.BloodType,
+		Quantity:           req.Quantity,
+		Urgency:            req.Urgency,
+		HospitalExternalID: req.HospitalExternalID,
+		HospitalName:       req.HospitalName,
+		City:               req.City,
+		Latitude:           req.Latitude,
+		Longitude:          req.Longitude,
+		Notes:              req.Notes,
+		Status:             "pending",
+		NeededAt:           req.NeededAt,
+	}
+
+	ctx, cancel := context.WithTimeout(context.TODO(), timeOut)
+	defer cancel()
+
+	if err := u.bloodReqRepo.Create(ctx, bloodReq); err != nil {
+		return nil, err
+	}
+
+	return bloodReq, nil
 }
 
-func (u *bloodReqUsecase) FindAll() ([]entity.BloodRequest, error) {
-	return nil, nil
+func (u *bloodReqUsecase) FindAll(userID uuid.UUID) ([]entity.BloodRequest, error) {
+	ctx, cancel := context.WithTimeout(context.TODO(), timeOut)
+	defer cancel()
+
+	return u.bloodReqRepo.FindAll(ctx, userID)
 }
 
-func (u *bloodReqUsecase) FindOne(BloodRequestID uuid.UUID) (*entity.BloodRequest, error) {
-	return nil, nil
+func (u *bloodReqUsecase) FindOne(userID uuid.UUID, BloodRequestID uuid.UUID) (*entity.BloodRequest, error) {
+	ctx, cancel := context.WithTimeout(context.TODO(), timeOut)
+	defer cancel()
+
+	return u.bloodReqRepo.FindOne(ctx, userID, BloodRequestID)
 }
 
-func (u *bloodReqUsecase) Cancel(BloodRequestID uuid.UUID) error {
-	return nil
+func (u *bloodReqUsecase) Cancel(userID uuid.UUID, BloodRequestID uuid.UUID) error {
+	ctx, cancel := context.WithTimeout(context.TODO(), timeOut)
+	defer cancel()
+
+	return u.bloodReqRepo.Cancel(ctx, userID, BloodRequestID)
 }
 
 func (u *bloodReqUsecase) FindMatches(BloodRequestID uuid.UUID) ([]entity.DonorMatches, error) {
