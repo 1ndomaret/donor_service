@@ -33,6 +33,10 @@ func main() {
 	bloodReqUsecase := usecase.NewBloodRequestUsecase(bloodReqRepository, bloodReqHttpRepo)
 	bloodReqHandler := handler.NewBloodRequestHandler(bloodReqUsecase)
 
+	donorMatchesRepository := repository.NewDonorMatchesRepository(db)
+	donorMatchesUsecase := usecase.NewDonorMatchesUsecase(donorMatchesRepository, bloodReqRepository)
+	donorMatchesHandler := handler.NewDonorMatchesHandler(donorMatchesUsecase)
+
 	scheduler := scheduler.NewScheduler()
 	if err := scheduler.Start(); err != nil {
 		log.Println(err.Error())
@@ -42,6 +46,7 @@ func main() {
 
 	router.Register(e,
 		bloodReqHandler,
+		donorMatchesHandler,
 	)
 
 	if err := e.Start(":1324"); err != nil {
