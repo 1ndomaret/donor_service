@@ -1,6 +1,7 @@
 package router
 
 import (
+	"donor-service/app/internal/handler"
 	"donor-service/app/internal/middleware"
 
 	echojwt "github.com/labstack/echo-jwt/v5"
@@ -8,11 +9,15 @@ import (
 )
 
 func Register(e *echo.Echo,
+	donorMatchesHandler *handler.DonorMatchesHandler,
 ) {
 	api := e.Group("/api/v1")
 
 	private := api.Group("")
 	private.Use(echojwt.WithConfig(middleware.JwtConfig()), middleware.ParseJwtClaims)
+	private.POST("/blood-requests/:id/invite/:donorId", donorMatchesHandler.Invite)
+	private.PATCH("/donor-matches/:id/accept", donorMatchesHandler.Accept)
+	private.PATCH("/donor-matches/:id/decline", donorMatchesHandler.Decline)
 
 	/*
 		- Bikin blood-request
