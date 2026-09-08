@@ -1,24 +1,41 @@
 package main
 
 import (
+	"donor-service/app/internal/config"
+	"donor-service/app/internal/entity"
+	"donor-service/app/internal/handler"
+	"donor-service/app/internal/repository"
+	"donor-service/app/internal/router"
+	"donor-service/app/internal/usecase"
+	"log"
+
 	"github.com/labstack/echo/v5"
 )
 
 func main() {
-	// db, err := config.InitDB()
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
+	db, err := config.InitDB()
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	// if err := db.AutoMigrate(); err != nil {
-	// 	log.Fatal("failed to migrate database:", err)
-	// }
+	if err := db.AutoMigrate(
+		&entity.BloodRequest{},
+		&entity.Donation{},
+		&entity.DonorMatches{},
+	); err != nil {
+		log.Fatal("failed to migrate database:", err)
+	}
+
+	bloodReqRepository := repository.NewBloodRequestRepository(db)
+	bloodReqUsecase := usecase.NewBloodRequestUsecase(bloodReqRepository)
+	bloodReqHandler := handler.NewBloodRequestHandler(bloodReqUsecase)
 
 	e := echo.New()
 
-	// router.Register(e,
+	router.Register(e,
+		bloodReqHandler,
+	)
 
-	// )
 	if err := e.Start(":1323"); err != nil {
 		e.Logger.Error("failed to start server", "error", err)
 	}
