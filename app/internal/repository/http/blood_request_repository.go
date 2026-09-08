@@ -21,7 +21,6 @@ func NewBloodRequestHttpRepo(cfg config.ServicesConfig) domain.BloodRequestHttpR
 	client := resty.New()
 
 	baseURL := fmt.Sprintf("%s:%s", cfg.UserURL, cfg.UserPort)
-	fmt.Println(baseURL)
 
 	client.SetBaseURL(baseURL)
 	client.SetTimeout(10 * time.Second)

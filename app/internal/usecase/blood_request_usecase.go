@@ -95,6 +95,14 @@ func (u *bloodReqUsecase) Cancel(userID uuid.UUID, BloodRequestID uuid.UUID) err
 }
 
 func (u *bloodReqUsecase) GetMatches(BloodRequestID uuid.UUID) ([]entity.DonorMatch, error) {
+	ctx, cancel := context.WithTimeout(context.TODO(), timeOut)
+	defer cancel()
+
+	_, err := u.bloodReqRepo.GetById(ctx, BloodRequestID)
+	if err != nil {
+		return nil, err
+	}
+
 	return nil, nil
 }
 

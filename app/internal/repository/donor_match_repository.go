@@ -80,3 +80,7 @@ func (r *donorMatchRepository) UpdateStatus(
 		Update("status", status).
 		Error
 }
+
+func (r *donorMatchRepository) Create(ctx context.Context, donor *entity.DonorMatch) error {
+	return r.db.Create(donor).Error
+}

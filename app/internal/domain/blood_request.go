@@ -36,11 +36,12 @@ type SearchMatchesRequest struct {
 }
 
 type BloodRequestRepository interface {
-	Create(ctx context.Context, req *entity.BloodRequest) error
+	Create(ctx context.Context, bloodReq *entity.BloodRequest) error
 	FindAll(ctx context.Context, userID uuid.UUID) ([]entity.BloodRequest, error)
 	FindOne(ctx context.Context, userID uuid.UUID, bloodRequestID uuid.UUID) (*entity.BloodRequest, error)
 	Cancel(ctx context.Context, userID uuid.UUID, bloodRequestID uuid.UUID) error
 
+	GetById(ctx context.Context, bloodRequestID uuid.UUID) (*entity.BloodRequest, error)
 	GetMatches(ctx context.Context, bloodRequestID uuid.UUID) ([]entity.DonorMatch, error)
 }
 

@@ -22,8 +22,8 @@ func NewBloodRequestRepository(db *gorm.DB) domain.BloodRequestRepository {
 	}
 }
 
-func (r *bloodRequestRepository) Create(ctx context.Context, req *entity.BloodRequest) error {
-	return r.db.Create(req).Error
+func (r *bloodRequestRepository) Create(ctx context.Context, bloodReq *entity.BloodRequest) error {
+	return r.db.Create(bloodReq).Error
 }
 
 func (r *bloodRequestRepository) FindAll(ctx context.Context, userID uuid.UUID) ([]entity.BloodRequest, error) {
@@ -69,10 +69,26 @@ func (r *bloodRequestRepository) Cancel(ctx context.Context, userID uuid.UUID, b
 	return nil
 }
 
-func (r *bloodRequestRepository) SearchMatches(ctx context.Context, bloodRequestID uuid.UUID) ([]entity.DonorMatch, error) {
-	return nil, nil
+func (r *bloodRequestRepository) GetMatches(ctx context.Context, bloodRequestID uuid.UUID) ([]entity.DonorMatch, error) {
+	var donorMatch []entity.DonorMatch
+
+	err := r.db.WithContext(ctx).Where("blood_request_id = ?", bloodRequestID).Find(&donorMatch).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return donorMatch, nil
 }
 
-func (r *bloodRequestRepository) GetMatches(ctx context.Context, bloodRequestID uuid.UUID) ([]entity.DonorMatch, error) {
-	return nil, nil
+func (r *bloodRequestRepository) GetById(ctx context.Context, bloodRequestID uuid.UUID) (*entity.BloodRequest, error) {
+	var bloodRequest entity.BloodRequest
+
+	if err := r.db.WithContext(ctx).Where("id = ?", bloodRequestID).First(&bloodRequest).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, domain.ErrBloodReqNotFound
+		}
+		return nil, err
+	}
+
+	return &bloodRequest, nil
 }

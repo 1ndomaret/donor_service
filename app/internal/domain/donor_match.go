@@ -32,6 +32,8 @@ type DonorMatchRepository interface {
 		id uuid.UUID,
 		status string,
 	) error
+
+	Create(ctx context.Context, donor *entity.DonorMatch) error
 }
 
 type BloodRequestReader interface {
