@@ -28,8 +28,9 @@ func main() {
 		log.Fatal("failed to migrate database:", err)
 	}
 
+	servicesConfig := config.ServicesSecret()
 	bloodReqRepository := repository.NewBloodRequestRepository(db)
-	bloodReqHttpRepo := httpRepo.NewBloodRequestHttpRepo(config.ServicesSecret())
+	bloodReqHttpRepo := httpRepo.NewBloodRequestHttpRepo(servicesConfig)
 	bloodReqUsecase := usecase.NewBloodRequestUsecase(bloodReqRepository, bloodReqHttpRepo)
 	bloodReqHandler := handler.NewBloodRequestHandler(bloodReqUsecase)
 
@@ -39,6 +40,10 @@ func main() {
 	donationRepository := repository.NewDonationRepository(db)
 	donationUsecase := usecase.NewDonationUsecase(donationRepository, donorMatchRepository, bloodReqRepository)
 	donationHandler := handler.NewDonationHandler(donationUsecase)
+
+	hospitalRepository := httpRepo.NewHospitalHttpRepo(servicesConfig)
+	hospitalUsecase := usecase.NewHospitalUsecase(hospitalRepository)
+	hospitalHandler := handler.NewHospitalHandler(hospitalUsecase)
 
 	scheduler := scheduler.NewScheduler()
 	if err := scheduler.Start(); err != nil {
@@ -51,6 +56,7 @@ func main() {
 		bloodReqHandler,
 		donorMatchHandler,
 		donationHandler,
+		hospitalHandler,
 	)
 
 	if err := e.Start(":1324"); err != nil {
