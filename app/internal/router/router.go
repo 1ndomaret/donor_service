@@ -12,6 +12,7 @@ func Register(e *echo.Echo,
 	bloodReqHandler *handler.BloodRequestHandler,
 	donorMatchHandler *handler.DonorMatchHandler,
 	donationHandler *handler.DonationHandler,
+	hospitalHandler *handler.HospitalHandler,
 ) {
 	api := e.Group("/api/v1")
 
@@ -29,6 +30,7 @@ func Register(e *echo.Echo,
 	private.PATCH("/donor-matches/:id/decline", donorMatchHandler.Decline)
 	private.POST("/donations", donationHandler.Create)
 	private.PATCH("/donations/:id/complete", donationHandler.Completed)
+	private.GET("/hospitals", hospitalHandler.GetHospitals)
 
 	/*
 		- Bikin blood-request

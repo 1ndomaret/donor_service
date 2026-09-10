@@ -8,9 +8,10 @@ import (
 )
 
 type ServicesConfig struct {
-	BaseURL  string
-	UserPort string
-	UserURL  string
+	BaseURL        string
+	UserPort       string
+	UserURL        string
+	GeoapifyAPIKey string
 }
 
 func ServicesSecret() ServicesConfig {
@@ -20,8 +21,9 @@ func ServicesSecret() ServicesConfig {
 	}
 
 	return ServicesConfig{
-		BaseURL:  os.Getenv("BASE_URL"),
-		UserPort: os.Getenv("USER_PORT"),
-		UserURL:  os.Getenv("USER_URL"),
+		BaseURL:        os.Getenv("BASE_URL"),
+		UserPort:       os.Getenv("USER_PORT"),
+		UserURL:        os.Getenv("USER_URL"),
+		GeoapifyAPIKey: os.Getenv("GEOAPIFY_API_KEY"),
 	}
 }
