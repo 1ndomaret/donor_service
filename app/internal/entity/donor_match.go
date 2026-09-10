@@ -15,5 +15,5 @@ type DonorMatch struct {
 	CreatedAt      time.Time `json:"created_at"`
 	UpdatedAt      time.Time `json:"updated_at"`
 
-	BloodRequest *BloodRequest `gorm:"foreignKey:BloodRequestID;references:ID" json:"-"`
+	// BloodRequest *BloodRequest `gorm:"foreignKey:BloodRequestID;references:ID" json:"-"`
 }
