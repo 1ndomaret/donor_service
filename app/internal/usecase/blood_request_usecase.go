@@ -30,8 +30,8 @@ func (u *bloodReqUsecase) Create(userID uuid.UUID, req *domain.BloodRequestReq) 
 	if req.BloodType == "" ||
 		req.Quantity <= 0 ||
 		req.Urgency == "" ||
-		req.HospitalExternalID == "" ||
-		req.HospitalName == "" ||
+		req.GeoapifyExternalID == "" ||
+		req.GeoapifyName == "" ||
 		req.City == "" ||
 		req.NeededAt.IsZero() {
 		return nil, domain.ErrInvalidInput
@@ -55,8 +55,8 @@ func (u *bloodReqUsecase) Create(userID uuid.UUID, req *domain.BloodRequestReq) 
 		BloodType:          req.BloodType,
 		Quantity:           req.Quantity,
 		Urgency:            req.Urgency,
-		HospitalExternalID: req.HospitalExternalID,
-		HospitalName:       req.HospitalName,
+		GeoapifyExternalID: req.GeoapifyExternalID,
+		GeoapifyName:       req.GeoapifyName,
 		City:               req.City,
 		Latitude:           req.Latitude,
 		Longitude:          req.Longitude,

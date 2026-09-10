@@ -2,7 +2,7 @@ package domain
 
 import "context"
 
-type Hospital struct {
+type Geoapify struct {
 	ExternalID string  `json:"external_id"`
 	Name       string  `json:"name"`
 	City       string  `json:"city"`
@@ -11,15 +11,15 @@ type Hospital struct {
 	Longitude  float64 `json:"longitude"`
 }
 
-type HospitalRepository interface {
-	GetHospitals(
+type GeoapifyRepository interface {
+	GetGeoapifys(
 		ctx context.Context,
 		city string,
-	) ([]Hospital, error)
+	) ([]Geoapify, error)
 }
 
-type HospitalUsecase interface {
-	GetHospitals(
+type GeoapifyUsecase interface {
+	GetGeoapifys(
 		city string,
-	) ([]Hospital, error)
+	) ([]Geoapify, error)
 }

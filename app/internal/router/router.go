@@ -12,7 +12,7 @@ func Register(e *echo.Echo,
 	bloodReqHandler *handler.BloodRequestHandler,
 	donorMatchHandler *handler.DonorMatchHandler,
 	donationHandler *handler.DonationHandler,
-	hospitalHandler *handler.HospitalHandler,
+	geoapifyHandler *handler.GeoapifyHandler,
 ) {
 	api := e.Group("/api/v1")
 
@@ -30,7 +30,7 @@ func Register(e *echo.Echo,
 	private.PATCH("/donor-matches/:id/decline", donorMatchHandler.Decline)
 	private.POST("/donations", donationHandler.Create)
 	private.PATCH("/donations/:id/complete", donationHandler.Completed)
-	private.GET("/hospitals", hospitalHandler.GetHospitals)
+	private.GET("/geoapifys", geoapifyHandler.GetGeoapifys)
 
 	/*
 		- Bikin blood-request
@@ -64,5 +64,5 @@ func Register(e *echo.Echo,
 	// POST  /donations <-- yang bisa create si requester
 	// PATCH /donations/:id/complete <-- yang bisa complete si requester
 
-	// GET /hospitals
+	// GET /geoapifys
 }

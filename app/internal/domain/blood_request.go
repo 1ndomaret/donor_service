@@ -21,8 +21,8 @@ type BloodRequestReq struct {
 	BloodType          string    `json:"blood_type"`
 	Quantity           int       `json:"quantity"`
 	Urgency            string    `json:"urgency"`
-	HospitalExternalID string    `json:"hospital_external_id"`
-	HospitalName       string    `json:"hospital_name"`
+	GeoapifyExternalID string    `json:"geoapify_external_id"`
+	GeoapifyName       string    `json:"geoapify_name"`
 	City               string    `json:"city"`
 	Latitude           float64   `json:"latitude"`
 	Longitude          float64   `json:"longitude"`

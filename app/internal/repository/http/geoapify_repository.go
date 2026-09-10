@@ -12,29 +12,29 @@ import (
 	"github.com/go-resty/resty/v2"
 )
 
-type hospitalHttpRepo struct {
+type geoapifyHttpRepo struct {
 	client *resty.Client
 	apiKey string
 }
 
-func NewHospitalHttpRepo(
+func NewGeoapifyHttpRepo(
 	cfg config.ServicesConfig,
-) domain.HospitalRepository {
+) domain.GeoapifyRepository {
 
 	client := resty.New()
 	client.SetBaseURL("https://api.geoapify.com")
 	client.SetTimeout(10 * time.Second)
 
-	return &hospitalHttpRepo{
+	return &geoapifyHttpRepo{
 		client: client,
 		apiKey: cfg.GeoapifyAPIKey,
 	}
 }
 
-func (r *hospitalHttpRepo) GetHospitals(
+func (r *geoapifyHttpRepo) GetGeoapifys(
 	ctx context.Context,
 	city string,
-) ([]domain.Hospital, error) {
+) ([]domain.Geoapify, error) {
 
 	// 1. Cari kota dulu untuk mendapatkan place_id
 	var geoRes dto.GeoapifyGeocodingResponse
@@ -61,7 +61,7 @@ func (r *hospitalHttpRepo) GetHospitals(
 	}
 
 	if len(geoRes.Results) == 0 {
-		return []domain.Hospital{}, nil
+		return []domain.Geoapify{}, nil
 	}
 
 	placeID := geoRes.Results[0].PlaceID
@@ -72,7 +72,7 @@ func (r *hospitalHttpRepo) GetHospitals(
 	res, err = r.client.R().
 		SetContext(ctx).
 		SetQueryParams(map[string]string{
-			"categories": "healthcare.hospital",
+			"categories": "healthcare.geoapify",
 			"filter":     fmt.Sprintf("place:%s", placeID),
 			"limit":      "20",
 			"lang":       "id",
@@ -89,12 +89,12 @@ func (r *hospitalHttpRepo) GetHospitals(
 		return nil, errors.New(res.Status())
 	}
 
-	hospitals := make([]domain.Hospital, 0)
+	geoapifys := make([]domain.Geoapify, 0)
 
 	for _, feature := range placesRes.Features {
 		prop := feature.Properties
 
-		hospitals = append(hospitals, domain.Hospital{
+		geoapifys = append(geoapifys, domain.Geoapify{
 			ExternalID: prop.PlaceID,
 			Name:       prop.Name,
 			City:       prop.City,
@@ -104,5 +104,5 @@ func (r *hospitalHttpRepo) GetHospitals(
 		})
 	}
 
-	return hospitals, nil
+	return geoapifys, nil
 }

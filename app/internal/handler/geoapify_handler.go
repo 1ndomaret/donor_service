@@ -7,19 +7,19 @@ import (
 	"github.com/labstack/echo/v5"
 )
 
-type HospitalHandler struct {
-	hospitalUsecase domain.HospitalUsecase
+type GeoapifyHandler struct {
+	geoapifyUsecase domain.GeoapifyUsecase
 }
 
-func NewHospitalHandler(
-	hospitalUsecase domain.HospitalUsecase,
-) *HospitalHandler {
-	return &HospitalHandler{
-		hospitalUsecase: hospitalUsecase,
+func NewGeoapifyHandler(
+	geoapifyUsecase domain.GeoapifyUsecase,
+) *GeoapifyHandler {
+	return &GeoapifyHandler{
+		geoapifyUsecase: geoapifyUsecase,
 	}
 }
 
-func (h *HospitalHandler) GetHospitals(
+func (h *GeoapifyHandler) GetGeoapifys(
 	c *echo.Context,
 ) error {
 	city := c.QueryParam("city")
@@ -31,7 +31,7 @@ func (h *HospitalHandler) GetHospitals(
 		)
 	}
 
-	hospitals, err := h.hospitalUsecase.GetHospitals(city)
+	geoapifys, err := h.geoapifyUsecase.GetGeoapifys(city)
 	if err != nil {
 		return helper.InternalServerError(
 			c,
@@ -43,6 +43,6 @@ func (h *HospitalHandler) GetHospitals(
 		c,
 		200,
 		"Success",
-		hospitals,
+		geoapifys,
 	)
 }

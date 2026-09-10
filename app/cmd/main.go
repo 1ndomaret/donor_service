@@ -42,9 +42,9 @@ func main() {
 	donationUsecase := usecase.NewDonationUsecase(donationRepository, donorMatchRepository, bloodReqRepository)
 	donationHandler := handler.NewDonationHandler(donationUsecase)
 
-	hospitalRepository := httpRepo.NewHospitalHttpRepo(servicesConfig)
-	hospitalUsecase := usecase.NewHospitalUsecase(hospitalRepository)
-	hospitalHandler := handler.NewHospitalHandler(hospitalUsecase)
+	geoapifyRepository := httpRepo.NewGeoapifyHttpRepo(servicesConfig)
+	geoapifyUsecase := usecase.NewGeoapifyUsecase(geoapifyRepository)
+	geoapifyHandler := handler.NewGeoapifyHandler(geoapifyUsecase)
 
 	scheduler := scheduler.NewScheduler(bloodReqUsecase)
 	if err := scheduler.Start(); err != nil {
@@ -57,7 +57,7 @@ func main() {
 		bloodReqHandler,
 		donorMatchHandler,
 		donationHandler,
-		hospitalHandler,
+		geoapifyHandler,
 	)
 
 	if err := e.Start(":1324"); err != nil {

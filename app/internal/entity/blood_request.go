@@ -12,8 +12,8 @@ type BloodRequest struct {
 	BloodType          string    `gorm:"not null" json:"blood_type"`
 	Quantity           int       `gorm:"not null" json:"quantity"`
 	Urgency            string    `gorm:"not null" json:"urgency"`
-	HospitalExternalID string    `gorm:"not null" json:"hospital_external_id"`
-	HospitalName       string    `gorm:"not null" json:"hospital_name"`
+	GeoapifyExternalID string    `gorm:"not null" json:"geoapify_external_id"`
+	GeoapifyName       string    `gorm:"not null" json:"geoapify_name"`
 	City               string    `gorm:"not null" json:"city"`
 	Latitude           float64   `json:"latitude"`
 	Longitude          float64   `json:"longitude"`
