@@ -10,9 +10,10 @@ import (
 )
 
 var (
-	ErrDonorMatchNotFound = errors.New("donor match not found")
-	ErrForbidden          = errors.New("forbidden")
-	ErrInvalidMatchStatus = errors.New("invalid donor match status")
+	ErrDonorMatchNotFound    = errors.New("donor match not found")
+	ErrForbidden             = errors.New("forbidden")
+	ErrInvalidMatchStatus    = errors.New("invalid donor match status")
+	ErrBloodRequestFulfilled = errors.New("blood request quantity already fulfilled")
 )
 
 type DonorMatchRepository interface {
@@ -34,6 +35,22 @@ type DonorMatchRepository interface {
 	) error
 
 	Create(ctx context.Context, donor *entity.DonorMatch) error
+
+	CountAccepted(
+		ctx context.Context,
+		bloodRequestID uuid.UUID,
+	) (int64, error)
+
+	UpdateDistance(
+		ctx context.Context,
+		id uuid.UUID,
+		distanceKM float64,
+	) error
+
+	GetByRequesterID(
+		ctx context.Context,
+		requesterID uuid.UUID,
+	) ([]entity.DonorMatch, error)
 }
 
 type BloodRequestReader interface {
@@ -59,4 +76,8 @@ type DonorMatchUsecase interface {
 		donorID uuid.UUID,
 		matchID uuid.UUID,
 	) (*entity.DonorMatch, error)
+
+	GetByRequesterID(
+		requesterID uuid.UUID,
+	) ([]entity.DonorMatch, error)
 }

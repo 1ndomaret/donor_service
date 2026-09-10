@@ -36,15 +36,17 @@ func main() {
 	bloodReqUsecase := usecase.NewBloodRequestUsecase(bloodReqRepository, userServiceHttpRepo)
 	bloodReqHandler := handler.NewBloodRequestHandler(bloodReqUsecase)
 
+	geoapifyRepository := httpRepo.NewGeoapifyHttpRepo(servicesConfig)
+
 	donorMatchRepository := repository.NewDonorMatchRepository(db)
-	donorMatchUsecase := usecase.NewDonorMatchUsecase(donorMatchRepository, bloodReqRepository, userServiceHttpRepo)
+	donationRepository := repository.NewDonationRepository(db)
+
+	donorMatchUsecase := usecase.NewDonorMatchUsecase(donorMatchRepository, bloodReqRepository, userServiceHttpRepo, geoapifyRepository, donationRepository)
 	donorMatchHandler := handler.NewDonorMatchHandler(donorMatchUsecase)
 
-	donationRepository := repository.NewDonationRepository(db)
 	donationUsecase := usecase.NewDonationUsecase(donationRepository, donorMatchRepository, bloodReqRepository)
 	donationHandler := handler.NewDonationHandler(donationUsecase)
 
-	geoapifyRepository := httpRepo.NewGeoapifyHttpRepo(servicesConfig)
 	geoapifyUsecase := usecase.NewGeoapifyUsecase(geoapifyRepository, donorMatchRepository, userServiceHttpRepo, bloodReqRepository)
 	geoapifyHandler := handler.NewGeoapifyHandler(geoapifyUsecase)
 

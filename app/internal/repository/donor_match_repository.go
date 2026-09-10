@@ -84,3 +84,62 @@ func (r *donorMatchRepository) UpdateStatus(
 func (r *donorMatchRepository) Create(ctx context.Context, donor *entity.DonorMatch) error {
 	return r.db.Create(donor).Error
 }
+
+func (r *donorMatchRepository) GetByRequesterID(
+	ctx context.Context,
+	requesterID uuid.UUID,
+) ([]entity.DonorMatch, error) {
+	var donorMatches []entity.DonorMatch
+
+	subQuery := r.db.
+		WithContext(ctx).
+		Model(&entity.BloodRequest{}).
+		Select("id").
+		Where("requester_id = ?", requesterID)
+
+	err := r.db.
+		WithContext(ctx).
+		Preload("BloodRequest").
+		Where("blood_request_id IN (?)", subQuery).
+		Find(&donorMatches).
+		Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	return donorMatches, nil
+}
+
+func (r *donorMatchRepository) CountAccepted(
+	ctx context.Context,
+	bloodRequestID uuid.UUID,
+) (int64, error) {
+	var count int64
+
+	err := r.db.
+		WithContext(ctx).
+		Model(&entity.DonorMatch{}).
+		Where(
+			"blood_request_id = ? AND status = ?",
+			bloodRequestID,
+			"accepted",
+		).
+		Count(&count).
+		Error
+
+	return count, err
+}
+
+func (r *donorMatchRepository) UpdateDistance(
+	ctx context.Context,
+	id uuid.UUID,
+	distanceKM float64,
+) error {
+	return r.db.
+		WithContext(ctx).
+		Model(&entity.DonorMatch{}).
+		Where("id = ?", id).
+		Update("distance_km", distanceKM).
+		Error
+}

@@ -27,6 +27,7 @@ func Register(e *echo.Echo,
 	private.GET("/blood-requests/:id/matches", bloodReqHandler.GetMatches)
 
 	private.POST("/blood-requests/:id/invite/:donorId", donorMatchHandler.Invite)
+	private.GET("/donor_match/", donorMatchHandler.GetByRequesterID)
 	private.PATCH("/donor-matches/:id/accept", donorMatchHandler.Accept)
 	private.PATCH("/donor-matches/:id/decline", donorMatchHandler.Decline)
 	private.POST("/donations", donationHandler.Create)

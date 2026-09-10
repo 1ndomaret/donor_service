@@ -132,6 +132,9 @@ func (h *DonorMatchHandler) Decline(c *echo.Context) error {
 		case errors.Is(err, domain.ErrInvalidMatchStatus):
 			return helper.BadRequest(c, err.Error())
 
+		case errors.Is(err, domain.ErrBloodRequestFulfilled):
+			return helper.BadRequest(c, err.Error())
+
 		default:
 			return helper.InternalServerError(c, err.Error())
 		}
@@ -142,5 +145,24 @@ func (h *DonorMatchHandler) Decline(c *echo.Context) error {
 		200,
 		"Invitation declined",
 		donorMatch,
+	)
+}
+
+func (h *DonorMatchHandler) GetByRequesterID(c *echo.Context) error {
+	requesterID, ok := c.Get("user_id").(uuid.UUID)
+	if !ok {
+		return helper.Unauthorized(c, "invalid or missing token")
+	}
+
+	donorMatches, err := h.donorMatchUsecase.GetByRequesterID(requesterID)
+	if err != nil {
+		return helper.InternalServerError(c, err.Error())
+	}
+
+	return helper.Success(
+		c,
+		200,
+		"Success",
+		donorMatches,
 	)
 }

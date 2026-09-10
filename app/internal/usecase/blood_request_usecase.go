@@ -74,6 +74,31 @@ func (u *bloodReqUsecase) Create(userID uuid.UUID, req *domain.BloodRequestReq) 
 		return nil, err
 	}
 
+	filter := domain.SearchMatchesRequest{
+		BloodType: bloodReq.BloodType,
+		City:      bloodReq.City,
+	}
+
+	matches, err := u.userServiceRepo.SearchMatches(
+		ctx,
+		"",
+		&filter,
+	)
+	if err != nil {
+		log.Println("failed to search donor matches:", err)
+		return bloodReq, nil
+	}
+
+	if len(matches) > 0 {
+		if err := u.bloodReqRepo.CreateMatches(
+			ctx,
+			bloodReq.ID,
+			matches,
+		); err != nil {
+			return nil, err
+		}
+	}
+
 	return bloodReq, nil
 }
 
