@@ -5,7 +5,6 @@ import (
 	"donor-service/app/internal/domain"
 	"donor-service/app/internal/entity"
 	"errors"
-	"fmt"
 	"time"
 
 	"github.com/google/uuid"
@@ -59,8 +58,6 @@ func (r *bloodRequestRepository) Cancel(ctx context.Context, userID uuid.UUID, b
 		Update("status", "cancelled")
 
 	if result.Error != nil {
-		fmt.Println(result.Error.Error())
-
 		return result.Error
 	}
 

@@ -14,4 +14,6 @@ type DonorMatch struct {
 	DistanceKM     float64   `json:"distance_km"`
 	CreatedAt      time.Time `json:"created_at"`
 	UpdatedAt      time.Time `json:"updated_at"`
+
+	BloodRequest *BloodRequest `gorm:"foreignKey:BloodRequestID;references:ID" json:"-"`
 }

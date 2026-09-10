@@ -68,4 +68,25 @@ func Register(e *echo.Echo,
 	// PATCH /donations/:id/complete <-- yang bisa complete si requester
 
 	// GET /geoapifys
+
+	/*
+		http://localhost:1323/api/v1/users/donor-profile/search?blood_type=A+&city=Jakarta
+		- masih case sensitive
+
+		http://localhost:1324/api/v1/blood-requests
+		- masih nge-get cancelled requests
+
+		http://localhost:1324/api/v1/blood-requests
+		- auto create donor matches
+
+		http://localhost:1324/api/v1/donor-matches/:id/accept
+		- cuma bisa accept kalau BloodRequest.DonorMatches.length < BloodRequest.Quantity
+		- auto update DonorMatch.DistanceKm
+
+		http://localhost:1324/api/v1/donor-matches/:id/accept
+		- auto create Donation setelah accept
+
+		http://localhost:1324/api/v1/donor_match/
+		- get donor match for requester
+	*/
 }

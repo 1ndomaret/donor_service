@@ -68,7 +68,7 @@ func (h *DonorMatchHandler) Invite(c *echo.Context) error {
 }
 
 func (h *DonorMatchHandler) Accept(c *echo.Context) error {
-	donorID, ok := c.Get("user_id").(uuid.UUID)
+	donorID, ok := c.Get("donor_id").(uuid.UUID)
 	if !ok {
 		return helper.Unauthorized(c, "invalid or missing token")
 	}
@@ -107,7 +107,7 @@ func (h *DonorMatchHandler) Accept(c *echo.Context) error {
 }
 
 func (h *DonorMatchHandler) Decline(c *echo.Context) error {
-	donorID, ok := c.Get("user_id").(uuid.UUID)
+	donorID, ok := c.Get("donor_id").(uuid.UUID)
 	if !ok {
 		return helper.Unauthorized(c, "invalid or missing token")
 	}

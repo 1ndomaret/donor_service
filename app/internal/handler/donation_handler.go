@@ -33,13 +33,13 @@ func (h *DonationHandler) Create(
 		)
 	}
 
-	role, ok := c.Get("role").(string)
-	if !ok || role != "requester" {
-		return helper.Forbidden(
-			c,
-			"only requester can create donation",
-		)
-	}
+	// role, ok := c.Get("role").(string)
+	// if !ok || role != "requester" {
+	// 	return helper.Forbidden(
+	// 		c,
+	// 		"only requester can create donation",
+	// 	)
+	// }
 
 	var req domain.DonationReq
 
@@ -85,13 +85,13 @@ func (h *DonationHandler) Completed(
 		)
 	}
 
-	role, ok := c.Get("role").(string)
-	if !ok || role != "requester" {
-		return helper.Forbidden(
-			c,
-			"only requester can complete donation",
-		)
-	}
+	// role, ok := c.Get("role").(string)
+	// if !ok || role != "requester" {
+	// 	return helper.Forbidden(
+	// 		c,
+	// 		"only requester can complete donation",
+	// 	)
+	// }
 
 	donationID, err := uuid.Parse(c.Param("id"))
 	if err != nil {

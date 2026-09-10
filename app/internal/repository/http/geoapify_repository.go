@@ -65,7 +65,7 @@ func (r *geoapifyHttpRepo) GetGeoapifyHospitals(
 	}
 
 	placeID := geoRes.Results[0].PlaceID
-	fmt.Println(placeID)
+
 	// 2. Cari rumah sakit di area kota tersebut
 	var placesRes dto.GeoapifyPlacesResponse
 
@@ -86,7 +86,6 @@ func (r *geoapifyHttpRepo) GetGeoapifyHospitals(
 	}
 
 	if res.IsError() {
-		fmt.Println("here3")
 		return nil, errors.New(res.Status())
 	}
 

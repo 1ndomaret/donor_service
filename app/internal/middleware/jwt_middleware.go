@@ -22,6 +22,7 @@ func ParseJwtClaims(next echo.HandlerFunc) echo.HandlerFunc {
 		}
 
 		c.Set("user_id", claims.UserID)
+		c.Set("donor_id", claims.DonorID)
 		c.Set("email", claims.Email)
 		c.Set("role", claims.Role)
 
