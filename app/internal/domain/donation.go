@@ -33,7 +33,7 @@ type DonationRepository interface {
 		donation uuid.UUID,
 	) (*entity.Donation, error)
 
-	Complete(
+	Completed(
 		ctx context.Context,
 		donationID uuid.UUID,
 		confirmedBy uuid.UUID,
