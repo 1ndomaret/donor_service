@@ -46,7 +46,7 @@ func main() {
 	hospitalUsecase := usecase.NewHospitalUsecase(hospitalRepository)
 	hospitalHandler := handler.NewHospitalHandler(hospitalUsecase)
 
-	scheduler := scheduler.NewScheduler()
+	scheduler := scheduler.NewScheduler(bloodReqUsecase)
 	if err := scheduler.Start(); err != nil {
 		log.Println(err.Error())
 	}

@@ -43,6 +43,8 @@ type BloodRequestRepository interface {
 
 	GetById(ctx context.Context, bloodRequestID uuid.UUID) (*entity.BloodRequest, error)
 	GetMatches(ctx context.Context, bloodRequestID uuid.UUID) ([]entity.DonorMatch, error)
+	CreateMatches(ctx context.Context, bloodRequestID uuid.UUID, donors []entity.DonorProfile) error
+	GetPendingReqs(ctx context.Context) ([]entity.BloodRequest, error)
 }
 
 type BloodRequestUsecase interface {
@@ -53,6 +55,7 @@ type BloodRequestUsecase interface {
 
 	GetMatches(bloodRequestID uuid.UUID) ([]entity.DonorMatch, error)
 	SearchMatches(token string, userID uuid.UUID, bloodRequestID uuid.UUID) ([]entity.DonorProfile, error)
+	ProcessDonorMatches() error
 }
 
 type BloodRequestHttpRepo interface {

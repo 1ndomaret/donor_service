@@ -5,6 +5,8 @@ import (
 	"donor-service/app/internal/domain"
 	"donor-service/app/internal/entity"
 	"donor-service/app/internal/helper"
+	"log"
+	"sync"
 	"time"
 
 	"github.com/google/uuid"
@@ -121,4 +123,48 @@ func (u *bloodReqUsecase) SearchMatches(token string, userID uuid.UUID, BloodReq
 	}
 
 	return u.bloodHttpRepo.SearchMatches(ctx, token, &filter)
+}
+
+func (u *bloodReqUsecase) ProcessDonorMatches() error {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+
+	pendingReqs, err := u.bloodReqRepo.GetPendingReqs(ctx)
+	if err != nil {
+		return err
+	}
+	if len(pendingReqs) == 0 {
+		return nil
+	}
+
+	var wg sync.WaitGroup
+	for _, req := range pendingReqs {
+		wg.Add(1)
+
+		go func(request entity.BloodRequest) {
+			defer wg.Done()
+
+			searchReq := domain.SearchMatchesRequest{
+				BloodType: request.BloodType,
+				City:      request.City,
+			}
+
+			matches, err := u.bloodHttpRepo.SearchMatches(ctx, "", &searchReq)
+			if err != nil {
+				log.Println(err)
+				return
+			}
+
+			if len(matches) > 0 {
+				err = u.bloodReqRepo.CreateMatches(ctx, request.ID, matches)
+				if err != nil {
+					log.Println(err)
+					return
+				}
+			}
+		}(req)
+	}
+	wg.Wait()
+
+	return nil
 }

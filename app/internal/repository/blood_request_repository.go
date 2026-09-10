@@ -6,10 +6,12 @@ import (
 	"donor-service/app/internal/entity"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/google/uuid"
 
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type bloodRequestRepository struct {
@@ -91,4 +93,30 @@ func (r *bloodRequestRepository) GetById(ctx context.Context, bloodRequestID uui
 	}
 
 	return &bloodRequest, nil
+}
+
+func (r *bloodRequestRepository) CreateMatches(ctx context.Context, reqID uuid.UUID, donors []entity.DonorProfile) error {
+	var matches []entity.DonorMatch
+
+	for _, donor := range donors {
+		matches = append(matches, entity.DonorMatch{
+			ID:             uuid.New(),
+			BloodRequestID: reqID,
+			DonorID:        donor.ID,
+			Status:         "invited",
+			CreatedAt:      time.Now(),
+		})
+	}
+
+	return r.db.WithContext(ctx).Clauses(clause.OnConflict{DoNothing: true}).Create(&matches).Error
+}
+
+func (r *bloodRequestRepository) GetPendingReqs(ctx context.Context) ([]entity.BloodRequest, error) {
+	var reqs []entity.BloodRequest
+
+	if err := r.db.WithContext(ctx).Where("status = ?", "pending").Find(&reqs).Error; err != nil {
+		return nil, err
+	}
+
+	return reqs, nil
 }
