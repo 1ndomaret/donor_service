@@ -13,25 +13,27 @@ import (
 )
 
 type bloodReqUsecase struct {
-	bloodReqRepo  domain.BloodRequestRepository
-	bloodHttpRepo domain.BloodRequestHttpRepo
+	bloodReqRepo    domain.BloodRequestRepository
+	userServiceRepo domain.UserServiceHttpRepo
 }
 
-func NewBloodRequestUsecase(bloodReqRepo domain.BloodRequestRepository, bloodHttpRepo domain.BloodRequestHttpRepo) domain.BloodRequestUsecase {
+func NewBloodRequestUsecase(bloodReqRepo domain.BloodRequestRepository, userServiceRepo domain.UserServiceHttpRepo) domain.BloodRequestUsecase {
 	return &bloodReqUsecase{
-		bloodReqRepo:  bloodReqRepo,
-		bloodHttpRepo: bloodHttpRepo,
+		bloodReqRepo:    bloodReqRepo,
+		userServiceRepo: userServiceRepo,
 	}
 }
 
 var timeOut = 10 * time.Second
+var cronTimeOut = 5 * time.Minute
+var serviceTimeOut = 15 * time.Second
 
 func (u *bloodReqUsecase) Create(userID uuid.UUID, req *domain.BloodRequestReq) (*entity.BloodRequest, error) {
 	if req.BloodType == "" ||
 		req.Quantity <= 0 ||
 		req.Urgency == "" ||
-		req.GeoapifyExternalID == "" ||
-		req.GeoapifyName == "" ||
+		req.HospitalExternalID == "" ||
+		req.HospitalName == "" ||
 		req.City == "" ||
 		req.NeededAt.IsZero() {
 		return nil, domain.ErrInvalidInput
@@ -55,8 +57,8 @@ func (u *bloodReqUsecase) Create(userID uuid.UUID, req *domain.BloodRequestReq) 
 		BloodType:          req.BloodType,
 		Quantity:           req.Quantity,
 		Urgency:            req.Urgency,
-		GeoapifyExternalID: req.GeoapifyExternalID,
-		GeoapifyName:       req.GeoapifyName,
+		HospitalExternalID: req.HospitalExternalID,
+		HospitalName:       req.HospitalName,
 		City:               req.City,
 		Latitude:           req.Latitude,
 		Longitude:          req.Longitude,
@@ -109,7 +111,7 @@ func (u *bloodReqUsecase) GetMatches(BloodRequestID uuid.UUID) ([]entity.DonorMa
 }
 
 func (u *bloodReqUsecase) SearchMatches(token string, userID uuid.UUID, BloodRequestID uuid.UUID) ([]entity.DonorProfile, error) {
-	ctx, cancel := context.WithTimeout(context.TODO(), timeOut)
+	ctx, cancel := context.WithTimeout(context.TODO(), serviceTimeOut)
 	defer cancel()
 
 	bloodReq, err := u.bloodReqRepo.FindOne(ctx, userID, BloodRequestID)
@@ -122,11 +124,23 @@ func (u *bloodReqUsecase) SearchMatches(token string, userID uuid.UUID, BloodReq
 		City:      bloodReq.City,
 	}
 
-	return u.bloodHttpRepo.SearchMatches(ctx, token, &filter)
+	matches, err := u.userServiceRepo.SearchMatches(ctx, token, &filter)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(matches) > 0 {
+		err = u.bloodReqRepo.CreateMatches(ctx, bloodReq.ID, matches)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return matches, nil
 }
 
 func (u *bloodReqUsecase) ProcessDonorMatches() error {
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	ctx, cancel := context.WithTimeout(context.Background(), cronTimeOut)
 	defer cancel()
 
 	pendingReqs, err := u.bloodReqRepo.GetPendingReqs(ctx)
@@ -149,7 +163,7 @@ func (u *bloodReqUsecase) ProcessDonorMatches() error {
 				City:      request.City,
 			}
 
-			matches, err := u.bloodHttpRepo.SearchMatches(ctx, "", &searchReq)
+			matches, err := u.userServiceRepo.SearchMatches(ctx, "", &searchReq)
 			if err != nil {
 				log.Println(err)
 				return

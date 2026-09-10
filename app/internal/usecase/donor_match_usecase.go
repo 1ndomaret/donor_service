@@ -13,15 +13,18 @@ import (
 type donorMatchUsecase struct {
 	donorMatchRepository domain.DonorMatchRepository
 	bloodReqRepo         domain.BloodRequestRepository
+	userServiceRepo      domain.UserServiceHttpRepo
 }
 
 func NewDonorMatchUsecase(
 	donorMatchRepository domain.DonorMatchRepository,
 	bloodReqRepo domain.BloodRequestRepository,
+	userServiceRepo domain.UserServiceHttpRepo,
 ) domain.DonorMatchUsecase {
 	return &donorMatchUsecase{
 		donorMatchRepository: donorMatchRepository,
 		bloodReqRepo:         bloodReqRepo,
+		userServiceRepo:      userServiceRepo,
 	}
 }
 

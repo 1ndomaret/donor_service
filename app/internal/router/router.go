@@ -23,6 +23,7 @@ func Register(e *echo.Echo,
 	private.GET("/blood-requests", bloodReqHandler.FindAll)
 	private.GET("/blood-requests/:id", bloodReqHandler.FindOne)
 	private.PUT("/blood-requests/:id/cancel", bloodReqHandler.Cancel)
+
 	private.GET("/blood-requests/:id/matches", bloodReqHandler.GetMatches)
 
 	private.POST("/blood-requests/:id/invite/:donorId", donorMatchHandler.Invite)
@@ -30,7 +31,9 @@ func Register(e *echo.Echo,
 	private.PATCH("/donor-matches/:id/decline", donorMatchHandler.Decline)
 	private.POST("/donations", donationHandler.Create)
 	private.PATCH("/donations/:id/complete", donationHandler.Completed)
-	private.GET("/geoapifys", geoapifyHandler.GetGeoapifys)
+
+	private.GET("/hospitals", geoapifyHandler.GetGeoapifyHospitals)
+	private.GET("/donor-matches/:id/route", geoapifyHandler.GetGeoapifyRoute)
 
 	/*
 		- Bikin blood-request

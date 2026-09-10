@@ -21,8 +21,8 @@ type BloodRequestReq struct {
 	BloodType          string    `json:"blood_type"`
 	Quantity           int       `json:"quantity"`
 	Urgency            string    `json:"urgency"`
-	GeoapifyExternalID string    `json:"geoapify_external_id"`
-	GeoapifyName       string    `json:"geoapify_name"`
+	HospitalExternalID string    `json:"hospital_external_id"`
+	HospitalName       string    `json:"hospital_name"`
 	City               string    `json:"city"`
 	Latitude           float64   `json:"latitude"`
 	Longitude          float64   `json:"longitude"`
@@ -56,8 +56,4 @@ type BloodRequestUsecase interface {
 	GetMatches(bloodRequestID uuid.UUID) ([]entity.DonorMatch, error)
 	SearchMatches(token string, userID uuid.UUID, bloodRequestID uuid.UUID) ([]entity.DonorProfile, error)
 	ProcessDonorMatches() error
-}
-
-type BloodRequestHttpRepo interface {
-	SearchMatches(ctx context.Context, token string, req *SearchMatchesRequest) ([]entity.DonorProfile, error)
 }

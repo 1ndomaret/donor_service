@@ -18,3 +18,20 @@ type GeoapifyPlacesResponse struct {
 		} `json:"properties"`
 	} `json:"features"`
 }
+
+type GeoapifyRoutingResponse struct {
+	Features []struct {
+		Properties struct {
+			Distance      float64 `json:"distance"`
+			DistanceUnits string  `json:"distance_units"`
+			Time          float64 `json:"time"`
+		} `json:"properties"`
+	} `json:"features"`
+}
+
+type GeoapifyRoutingRequest struct {
+	OriginLat      float64 `json:"origin_lat"`
+	OriginLon      float64 `json:"origin_lon"`
+	DestinationLat float64 `json:"destination_lat"`
+	DestinationLon float64 `json:"destination_lon"`
+}

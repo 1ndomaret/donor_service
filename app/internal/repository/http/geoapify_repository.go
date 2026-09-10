@@ -31,10 +31,10 @@ func NewGeoapifyHttpRepo(
 	}
 }
 
-func (r *geoapifyHttpRepo) GetGeoapifys(
+func (r *geoapifyHttpRepo) GetGeoapifyHospitals(
 	ctx context.Context,
 	city string,
-) ([]domain.Geoapify, error) {
+) ([]domain.GeoapifyHospital, error) {
 
 	// 1. Cari kota dulu untuk mendapatkan place_id
 	var geoRes dto.GeoapifyGeocodingResponse
@@ -61,18 +61,18 @@ func (r *geoapifyHttpRepo) GetGeoapifys(
 	}
 
 	if len(geoRes.Results) == 0 {
-		return []domain.Geoapify{}, nil
+		return []domain.GeoapifyHospital{}, nil
 	}
 
 	placeID := geoRes.Results[0].PlaceID
-
+	fmt.Println(placeID)
 	// 2. Cari rumah sakit di area kota tersebut
 	var placesRes dto.GeoapifyPlacesResponse
 
 	res, err = r.client.R().
 		SetContext(ctx).
 		SetQueryParams(map[string]string{
-			"categories": "healthcare.geoapify",
+			"categories": "healthcare.hospital",
 			"filter":     fmt.Sprintf("place:%s", placeID),
 			"limit":      "20",
 			"lang":       "id",
@@ -86,15 +86,16 @@ func (r *geoapifyHttpRepo) GetGeoapifys(
 	}
 
 	if res.IsError() {
+		fmt.Println("here3")
 		return nil, errors.New(res.Status())
 	}
 
-	geoapifys := make([]domain.Geoapify, 0)
+	geoapifys := make([]domain.GeoapifyHospital, 0)
 
 	for _, feature := range placesRes.Features {
 		prop := feature.Properties
 
-		geoapifys = append(geoapifys, domain.Geoapify{
+		geoapifys = append(geoapifys, domain.GeoapifyHospital{
 			ExternalID: prop.PlaceID,
 			Name:       prop.Name,
 			City:       prop.City,
@@ -105,4 +106,42 @@ func (r *geoapifyHttpRepo) GetGeoapifys(
 	}
 
 	return geoapifys, nil
+}
+
+func (r *geoapifyHttpRepo) GetGeoapifyRoute(ctx context.Context, req *dto.GeoapifyRoutingRequest) (*domain.GeoapifyRoute, error) {
+	var routingRes dto.GeoapifyRoutingResponse
+
+	waypoints := fmt.Sprintf("%f,%f|%f,%f",
+		req.OriginLat,
+		req.OriginLon,
+		req.DestinationLat,
+		req.DestinationLon,
+	)
+
+	res, err := r.client.R().
+		SetContext(ctx).
+		SetQueryParams(map[string]string{
+			"waypoints": waypoints,
+			"mode":      "drive",
+			"apiKey":    r.apiKey,
+		}).
+		SetResult(&routingRes).
+		Get("/v1/routing")
+
+	if err != nil {
+		return nil, err
+	}
+
+	if res.IsError() {
+		return nil, errors.New(res.Status())
+	}
+
+	routeProperties := routingRes.Features[0].Properties
+
+	return &domain.GeoapifyRoute{
+		Distance:      routeProperties.Distance,
+		DistanceUnits: routeProperties.DistanceUnits,
+		Time:          routeProperties.Time,
+		Mode:          "Drive",
+	}, nil
 }

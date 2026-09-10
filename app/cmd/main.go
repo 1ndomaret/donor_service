@@ -29,13 +29,15 @@ func main() {
 	}
 
 	servicesConfig := config.ServicesSecret()
+
+	userServiceHttpRepo := httpRepo.NewUserServiceHttpRepo(servicesConfig)
+
 	bloodReqRepository := repository.NewBloodRequestRepository(db)
-	bloodReqHttpRepo := httpRepo.NewBloodRequestHttpRepo(servicesConfig)
-	bloodReqUsecase := usecase.NewBloodRequestUsecase(bloodReqRepository, bloodReqHttpRepo)
+	bloodReqUsecase := usecase.NewBloodRequestUsecase(bloodReqRepository, userServiceHttpRepo)
 	bloodReqHandler := handler.NewBloodRequestHandler(bloodReqUsecase)
 
 	donorMatchRepository := repository.NewDonorMatchRepository(db)
-	donorMatchUsecase := usecase.NewDonorMatchUsecase(donorMatchRepository, bloodReqRepository)
+	donorMatchUsecase := usecase.NewDonorMatchUsecase(donorMatchRepository, bloodReqRepository, userServiceHttpRepo)
 	donorMatchHandler := handler.NewDonorMatchHandler(donorMatchUsecase)
 
 	donationRepository := repository.NewDonationRepository(db)
@@ -43,7 +45,7 @@ func main() {
 	donationHandler := handler.NewDonationHandler(donationUsecase)
 
 	geoapifyRepository := httpRepo.NewGeoapifyHttpRepo(servicesConfig)
-	geoapifyUsecase := usecase.NewGeoapifyUsecase(geoapifyRepository)
+	geoapifyUsecase := usecase.NewGeoapifyUsecase(geoapifyRepository, donorMatchRepository, userServiceHttpRepo, bloodReqRepository)
 	geoapifyHandler := handler.NewGeoapifyHandler(geoapifyUsecase)
 
 	scheduler := scheduler.NewScheduler(bloodReqUsecase)

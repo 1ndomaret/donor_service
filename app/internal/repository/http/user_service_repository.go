@@ -10,14 +10,16 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/google/uuid"
+
 	"github.com/go-resty/resty/v2"
 )
 
-type bloodRequestHttpRepo struct {
+type userServiceHttpRepo struct {
 	client *resty.Client
 }
 
-func NewBloodRequestHttpRepo(cfg config.ServicesConfig) domain.BloodRequestHttpRepo {
+func NewUserServiceHttpRepo(cfg config.ServicesConfig) domain.UserServiceHttpRepo {
 	client := resty.New()
 
 	baseURL := fmt.Sprintf("%s:%s", cfg.UserURL, cfg.UserPort)
@@ -25,12 +27,12 @@ func NewBloodRequestHttpRepo(cfg config.ServicesConfig) domain.BloodRequestHttpR
 	client.SetBaseURL(baseURL)
 	client.SetTimeout(10 * time.Second)
 
-	return &bloodRequestHttpRepo{
+	return &userServiceHttpRepo{
 		client: client,
 	}
 }
 
-func (r *bloodRequestHttpRepo) SearchMatches(ctx context.Context, token string, req *domain.SearchMatchesRequest) ([]entity.DonorProfile, error) {
+func (r *userServiceHttpRepo) SearchMatches(ctx context.Context, token string, req *domain.SearchMatchesRequest) ([]entity.DonorProfile, error) {
 	var apiRes dto.MatchSearchResponse
 
 	queryParams := map[string]string{}
@@ -54,6 +56,22 @@ func (r *bloodRequestHttpRepo) SearchMatches(ctx context.Context, token string, 
 
 	if len(apiRes.Data) == 0 {
 		return []entity.DonorProfile{}, nil
+	}
+
+	return apiRes.Data, nil
+}
+
+func (r *userServiceHttpRepo) GetDonorProfile(ctx context.Context, donor_id uuid.UUID) (*entity.DonorProfile, error) {
+	var apiRes dto.GetDonorResponse
+	res, err := r.client.R().
+		SetContext(ctx).
+		SetResult(&apiRes).
+		Get("/api/v1/users/donor-profile/" + donor_id.String())
+	if err != nil {
+		return nil, err
+	}
+	if res.IsError() {
+		return nil, errors.New(res.Status())
 	}
 
 	return apiRes.Data, nil
