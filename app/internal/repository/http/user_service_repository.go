@@ -45,13 +45,8 @@ func (r *userServiceHttpRepo) SearchMatches(ctx context.Context, token string, r
 		queryParams["city"] = req.City
 	}
 
-	authToken := token
-	if authToken == "" {
-		authToken = r.serviceToken
-	}
-
 	res, err := r.client.R().
-		SetHeader("Authorization", authToken).SetContext(ctx).SetQueryParams(queryParams).
+		SetHeader("Authorization", r.serviceToken).SetContext(ctx).SetQueryParams(queryParams).
 		SetResult(&apiRes).
 		Get("/api/v1/users/donor-profile/search")
 	if err != nil {
