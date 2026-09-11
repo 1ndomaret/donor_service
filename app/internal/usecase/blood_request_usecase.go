@@ -74,6 +74,11 @@ func (u *bloodReqUsecase) Create(userID uuid.UUID, req *domain.BloodRequestReq) 
 		return nil, err
 	}
 
+	_, err := u.SearchMatches("", userID, bloodReq.ID)
+	if err != nil {
+		return nil, err
+	}
+
 	return bloodReq, nil
 }
 
