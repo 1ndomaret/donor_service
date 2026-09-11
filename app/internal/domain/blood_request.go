@@ -45,6 +45,7 @@ type BloodRequestRepository interface {
 	GetMatches(ctx context.Context, bloodRequestID uuid.UUID) ([]entity.DonorMatch, error)
 	CreateMatches(ctx context.Context, bloodRequestID uuid.UUID, donors []entity.DonorProfile) error
 	GetPendingReqs(ctx context.Context) ([]entity.BloodRequest, error)
+	Complete(ctx context.Context, userID uuid.UUID, bloodRequestID uuid.UUID) error
 }
 
 type BloodRequestUsecase interface {

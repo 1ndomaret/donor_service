@@ -109,7 +109,7 @@ func (u *donationUsecase) Completed(
 		return nil, err
 	}
 
-	_, err = u.bloodReqRepo.FindOne(
+	bloodReq, err := u.bloodReqRepo.FindOne(
 		ctx,
 		requesterID,
 		donation.BloodRequestID,
@@ -136,6 +136,20 @@ func (u *donationUsecase) Completed(
 	donation.Status = "completed"
 	donation.DonationDate = &now
 	donation.ConfirmedBy = &requesterID
+
+	completedCount := 0
+	for _, donation := range bloodReq.Donations {
+		if donation.Status == "completed" {
+			completedCount++
+		}
+	}
+
+	if bloodReq.Quantity >= completedCount {
+		err = u.bloodReqRepo.Complete(ctx, requesterID, donation.BloodRequestID)
+		if err != nil {
+			return nil, err
+		}
+	}
 
 	return donation, nil
 }

@@ -264,6 +264,15 @@ func (m *MockBloodRequestRepository) GetPendingReqs(
 
 	return args.Get(0).([]entity.BloodRequest), args.Error(1)
 }
+func (m *MockBloodRequestRepository) Complete(ctx context.Context, userID uuid.UUID, bloodRequestID uuid.UUID) error {
+	args := m.Called(ctx)
+
+	if args.Get(0) == nil {
+		return args.Error(1)
+	}
+
+	return args.Error(1)
+}
 
 // ============================================================
 // CREATE DONATION TEST

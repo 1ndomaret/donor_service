@@ -24,4 +24,5 @@ type BloodRequest struct {
 	UpdatedAt          time.Time `json:"updated_at"`
 
 	DonorMatches []DonorMatch `gorm:"foreignKey:BloodRequestID;references:ID" json:"donor_matches,omitempty"`
+	Donations    []Donation   `gorm:"foreignKey:BloodRequestID;references:ID" json:"-"`
 }

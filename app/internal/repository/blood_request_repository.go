@@ -41,7 +41,7 @@ func (r *bloodRequestRepository) FindAll(ctx context.Context, userID uuid.UUID) 
 func (r *bloodRequestRepository) FindOne(ctx context.Context, userID uuid.UUID, bloodRequestID uuid.UUID) (*entity.BloodRequest, error) {
 	var bloodRequest entity.BloodRequest
 
-	if err := r.db.WithContext(ctx).Preload("DonorMatches").Where("id = ? AND requester_id = ?", bloodRequestID, userID).First(&bloodRequest).Error; err != nil {
+	if err := r.db.WithContext(ctx).Preload("Donations").Preload("DonorMatches").Where("id = ? AND requester_id = ?", bloodRequestID, userID).First(&bloodRequest).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, domain.ErrBloodReqNotFound
 		}
@@ -116,4 +116,21 @@ func (r *bloodRequestRepository) GetPendingReqs(ctx context.Context) ([]entity.B
 	}
 
 	return reqs, nil
+}
+
+func (r *bloodRequestRepository) Complete(ctx context.Context, userID uuid.UUID, bloodRequestID uuid.UUID) error {
+	result := r.db.WithContext(ctx).Model(&entity.BloodRequest{}).
+		Where("id = ? AND requester_id = ?", bloodRequestID, userID).
+		Where("status NOT IN ?", []string{"cancelled", "completed"}).
+		Update("status", "completed")
+
+	if result.Error != nil {
+		return result.Error
+	}
+
+	if result.RowsAffected == 0 {
+		return domain.ErrBloodReqNotFound
+	}
+
+	return nil
 }
