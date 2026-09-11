@@ -117,6 +117,8 @@ func (r *geoapifyHttpRepo) GetGeoapifyRoute(ctx context.Context, req *dto.Geoapi
 		req.DestinationLon,
 	)
 
+	fmt.Println(waypoints)
+
 	res, err := r.client.R().
 		SetContext(ctx).
 		SetQueryParams(map[string]string{

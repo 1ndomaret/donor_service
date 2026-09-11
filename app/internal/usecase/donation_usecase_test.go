@@ -62,6 +62,18 @@ func (m *MockDonationRepository) Completed(
 	return args.Error(0)
 }
 
+func (m *MockDonationRepository) GetByRequesterID(
+	ctx context.Context,
+	requesterID uuid.UUID,
+) ([]entity.Donation, error) {
+	args := m.Called(
+		ctx,
+		requesterID,
+	)
+	var donations []entity.Donation
+	return donations, args.Error(0)
+}
+
 // ============================================================
 // MOCK DONOR MATCH REPOSITORY
 // ============================================================
@@ -135,7 +147,7 @@ func (m *MockDonorMatchRepository) UpdateStatus(
 	return args.Error(0)
 }
 
-func (m *MockDonorMatchRepository) GetByRequesterID(
+func (m *MockDonorMatchRepository) GetByDonorID(
 	ctx context.Context,
 	requesterID uuid.UUID,
 ) ([]entity.DonorMatch, error) {

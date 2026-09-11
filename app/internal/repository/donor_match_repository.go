@@ -85,22 +85,16 @@ func (r *donorMatchRepository) Create(ctx context.Context, donor *entity.DonorMa
 	return r.db.Create(donor).Error
 }
 
-func (r *donorMatchRepository) GetByRequesterID(
+func (r *donorMatchRepository) GetByDonorID(
 	ctx context.Context,
-	requesterID uuid.UUID,
+	donorID uuid.UUID,
 ) ([]entity.DonorMatch, error) {
 	var donorMatches []entity.DonorMatch
-
-	subQuery := r.db.
-		WithContext(ctx).
-		Model(&entity.BloodRequest{}).
-		Select("id").
-		Where("requester_id = ?", requesterID)
 
 	err := r.db.
 		WithContext(ctx).
 		Preload("BloodRequest").
-		Where("blood_request_id IN (?)", subQuery).
+		Where("donor_id IN (?)", donorID).
 		Find(&donorMatches).
 		Error
 

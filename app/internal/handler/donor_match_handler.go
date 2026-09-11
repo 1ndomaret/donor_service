@@ -191,7 +191,7 @@ func (h *DonorMatchHandler) Decline(c *echo.Context) error {
 	)
 }
 
-// GetByRequesterID godoc
+// GetByDonorID godoc
 // @Summary Get donor matches for requester
 // @Description Get donor matches from blood requests owned by the authenticated requester
 // @Tags Donor Matches
@@ -201,13 +201,13 @@ func (h *DonorMatchHandler) Decline(c *echo.Context) error {
 // @Failure 401 {object} helper.ErrorSwaggoResponse "Unauthorized"
 // @Failure 500 {object} helper.ErrorSwaggoResponse "Internal Server Error"
 // @Router /donor-matches [get]
-func (h *DonorMatchHandler) GetByRequesterID(c *echo.Context) error {
-	requesterID, ok := c.Get("user_id").(uuid.UUID)
+func (h *DonorMatchHandler) GetByDonorID(c *echo.Context) error {
+	donorID, ok := c.Get("donor_id").(uuid.UUID)
 	if !ok {
 		return helper.Unauthorized(c, "invalid or missing token")
 	}
 
-	donorMatches, err := h.donorMatchUsecase.GetByRequesterID(requesterID)
+	donorMatches, err := h.donorMatchUsecase.GetByDonorID(donorID)
 	if err != nil {
 		return helper.InternalServerError(c, err.Error())
 	}

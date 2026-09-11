@@ -47,7 +47,7 @@ type DonorMatchRepository interface {
 		distanceKM float64,
 	) error
 
-	GetByRequesterID(
+	GetByDonorID(
 		ctx context.Context,
 		requesterID uuid.UUID,
 	) ([]entity.DonorMatch, error)
@@ -77,7 +77,7 @@ type DonorMatchUsecase interface {
 		matchID uuid.UUID,
 	) (*entity.DonorMatch, error)
 
-	GetByRequesterID(
+	GetByDonorID(
 		requesterID uuid.UUID,
 	) ([]entity.DonorMatch, error)
 }

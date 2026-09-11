@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"donor-service/app/internal/domain"
@@ -160,6 +161,7 @@ func (u *donorMatchUsecase) Accept(
 		&routeReq,
 	)
 	if err != nil {
+		fmt.Println(err.Error())
 		return nil, err
 	}
 
@@ -247,8 +249,8 @@ func (u *donorMatchUsecase) Decline(
 	return donorMatch, nil
 }
 
-func (u *donorMatchUsecase) GetByRequesterID(
-	requesterID uuid.UUID,
+func (u *donorMatchUsecase) GetByDonorID(
+	donorID uuid.UUID,
 ) ([]entity.DonorMatch, error) {
 	ctx, cancel := context.WithTimeout(
 		context.TODO(),
@@ -256,8 +258,8 @@ func (u *donorMatchUsecase) GetByRequesterID(
 	)
 	defer cancel()
 
-	return u.donorMatchRepository.GetByRequesterID(
+	return u.donorMatchRepository.GetByDonorID(
 		ctx,
-		requesterID,
+		donorID,
 	)
 }

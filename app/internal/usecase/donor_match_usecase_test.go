@@ -55,7 +55,7 @@ Yang dites:
    - Gagal update status menjadi declined
    - Berhasil decline
 
-4. GetByRequesterID
+4.GetByDonorID
    - Repository error
    - Berhasil mengambil donor matches milik requester
 
@@ -1170,18 +1170,18 @@ func TestDonorMatchUsecase_Decline_Success(t *testing.T) {
 // ============================================================
 
 // Test repository error ketika mengambil donor match berdasarkan requester.
-func TestDonorMatchUsecase_GetByRequesterID_RepositoryError(t *testing.T) {
+func TestDonorMatchUsecase_GetByDonorID_RepositoryError(t *testing.T) {
 	uc, donorMatchRepo, _, _, _, _ := newDonorMatchUsecaseForTest()
 
 	requesterID := uuid.New()
 	expectedErr := errors.New("get donor matches error")
 
 	donorMatchRepo.
-		On("GetByRequesterID", mock.Anything, requesterID).
+		On("GetByDonorID", mock.Anything, requesterID).
 		Return(nil, expectedErr).
 		Once()
 
-	result, err := uc.GetByRequesterID(requesterID)
+	result, err := uc.GetByDonorID(requesterID)
 
 	assert.Nil(t, result)
 	assert.ErrorIs(t, err, expectedErr)
@@ -1190,7 +1190,7 @@ func TestDonorMatchUsecase_GetByRequesterID_RepositoryError(t *testing.T) {
 }
 
 // Test berhasil mengambil semua donor match milik requester.
-func TestDonorMatchUsecase_GetByRequesterID_Success(t *testing.T) {
+func TestDonorMatchUsecase_GetByDonorID_Success(t *testing.T) {
 	uc, donorMatchRepo, _, _, _, _ := newDonorMatchUsecaseForTest()
 
 	requesterID := uuid.New()
@@ -1207,11 +1207,11 @@ func TestDonorMatchUsecase_GetByRequesterID_Success(t *testing.T) {
 	}
 
 	donorMatchRepo.
-		On("GetByRequesterID", mock.Anything, requesterID).
+		On("GetByDonorID", mock.Anything, requesterID).
 		Return(expected, nil).
 		Once()
 
-	result, err := uc.GetByRequesterID(requesterID)
+	result, err := uc.GetByDonorID(requesterID)
 
 	require.NoError(t, err)
 	assert.Equal(t, expected, result)

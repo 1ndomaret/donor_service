@@ -27,9 +27,10 @@ func Register(e *echo.Echo,
 	private.GET("/blood-requests/:id/matches", bloodReqHandler.GetMatches)
 
 	private.POST("/blood-requests/:id/invite/:donorId", donorMatchHandler.Invite)
-	private.GET("/donor-matches/", donorMatchHandler.GetByRequesterID)
+	private.GET("/donor-matches/", donorMatchHandler.GetByDonorID)
 	private.PATCH("/donor-matches/:id/accept", donorMatchHandler.Accept)
 	private.PATCH("/donor-matches/:id/decline", donorMatchHandler.Decline)
+
 	private.POST("/donations", donationHandler.Create)
 	private.PATCH("/donations/:id/complete", donationHandler.Completed)
 
