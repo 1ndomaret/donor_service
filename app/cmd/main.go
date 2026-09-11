@@ -9,11 +9,24 @@ import (
 	"donor-service/app/internal/router"
 	"donor-service/app/internal/scheduler"
 	"donor-service/app/internal/usecase"
+
+	_ "donor-service/docs"
+
 	"log"
 
 	"github.com/labstack/echo/v5"
+	echoSwagger "github.com/swaggo/echo-swagger/v2"
 )
 
+// @title BloodConnect Donor Service API
+// @version 1.0
+// @description REST API for BloodConnect donor, blood request, donation, and hospital services.
+// @host localhost:1324
+// @BasePath /api/v1
+//
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
 func main() {
 	db, err := config.InitDB()
 	if err != nil {
@@ -56,6 +69,8 @@ func main() {
 	}
 
 	e := echo.New()
+
+	e.GET("/swagger/*", echoSwagger.WrapHandler)
 
 	router.Register(e,
 		bloodReqHandler,

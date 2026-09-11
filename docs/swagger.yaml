@@ -1,0 +1,714 @@
+basePath: /api/v1
+definitions:
+  domain.BloodRequestReq:
+    properties:
+      blood_type:
+        type: string
+      city:
+        type: string
+      hospital_external_id:
+        type: string
+      hospital_name:
+        type: string
+      latitude:
+        type: number
+      longitude:
+        type: number
+      needed_at:
+        type: string
+      notes:
+        type: string
+      quantity:
+        type: integer
+      urgency:
+        type: string
+    type: object
+  domain.DonationReq:
+    properties:
+      blood_request_id:
+        type: string
+      donor_match_id:
+        type: string
+    type: object
+  domain.GeoapifyHospital:
+    properties:
+      address:
+        type: string
+      city:
+        type: string
+      external_id:
+        type: string
+      latitude:
+        type: number
+      longitude:
+        type: number
+      name:
+        type: string
+    type: object
+  domain.GeoapifyRoute:
+    properties:
+      distance:
+        type: number
+      distance_units:
+        type: string
+      mode:
+        type: string
+      time:
+        type: number
+    type: object
+  entity.BloodRequest:
+    properties:
+      blood_type:
+        type: string
+      city:
+        type: string
+      created_at:
+        type: string
+      donor_matches:
+        items:
+          $ref: '#/definitions/entity.DonorMatch'
+        type: array
+      hospital_external_id:
+        type: string
+      hospital_name:
+        type: string
+      id:
+        type: string
+      latitude:
+        type: number
+      longitude:
+        type: number
+      needed_at:
+        type: string
+      notes:
+        type: string
+      quantity:
+        type: integer
+      requester_id:
+        type: string
+      status:
+        type: string
+      updated_at:
+        type: string
+      urgency:
+        type: string
+    type: object
+  entity.Donation:
+    properties:
+      blood_request_id:
+        type: string
+      confirmed_by:
+        type: string
+      created_at:
+        type: string
+      donation_date:
+        type: string
+      donor_id:
+        type: string
+      donor_match_id:
+        type: string
+      id:
+        type: string
+      status:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  entity.DonorMatch:
+    properties:
+      blood_request:
+        $ref: '#/definitions/entity.BloodRequest'
+      blood_request_id:
+        type: string
+      created_at:
+        type: string
+      distance_km:
+        type: number
+      donor_id:
+        type: string
+      id:
+        type: string
+      status:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  helper.BloodRequestListSwaggoResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/entity.BloodRequest'
+        type: array
+      message:
+        type: string
+      status:
+        type: string
+    type: object
+  helper.BloodRequestSwaggoResponse:
+    properties:
+      data:
+        $ref: '#/definitions/entity.BloodRequest'
+      message:
+        type: string
+      status:
+        type: string
+    type: object
+  helper.DonationSwaggoResponse:
+    properties:
+      data:
+        $ref: '#/definitions/entity.Donation'
+      message:
+        type: string
+      status:
+        type: string
+    type: object
+  helper.DonorMatchListSwaggoResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/entity.DonorMatch'
+        type: array
+      message:
+        type: string
+      status:
+        type: string
+    type: object
+  helper.DonorMatchSwaggoResponse:
+    properties:
+      data:
+        $ref: '#/definitions/entity.DonorMatch'
+      message:
+        type: string
+      status:
+        type: string
+    type: object
+  helper.ErrorDetailSwaggoResponse:
+    properties:
+      detail:
+        type: string
+      error_code:
+        type: string
+      message:
+        type: string
+    type: object
+  helper.ErrorSwaggoResponse:
+    properties:
+      error:
+        $ref: '#/definitions/helper.ErrorDetailSwaggoResponse'
+      status:
+        type: string
+    type: object
+  helper.GeoapifyHospitalListSwaggoResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/domain.GeoapifyHospital'
+        type: array
+      message:
+        type: string
+      status:
+        type: string
+    type: object
+  helper.GeoapifyRouteSwaggoResponse:
+    properties:
+      data:
+        $ref: '#/definitions/domain.GeoapifyRoute'
+      message:
+        type: string
+      status:
+        type: string
+    type: object
+host: localhost:1324
+info:
+  contact: {}
+  description: REST API for BloodConnect donor, blood request, donation, and hospital
+    services.
+  title: BloodConnect Donor Service API
+  version: "1.0"
+paths:
+  /blood-requests:
+    get:
+      description: Get blood requests owned by the authenticated requester
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/helper.BloodRequestListSwaggoResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/helper.ErrorSwaggoResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/helper.ErrorSwaggoResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/helper.ErrorSwaggoResponse'
+      security:
+      - BearerAuth: []
+      summary: Get blood requests
+      tags:
+      - Blood Requests
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Blood request data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/domain.BloodRequestReq'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Blood request created
+          schema:
+            $ref: '#/definitions/helper.BloodRequestSwaggoResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/helper.ErrorSwaggoResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/helper.ErrorSwaggoResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/helper.ErrorSwaggoResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/helper.ErrorSwaggoResponse'
+      security:
+      - BearerAuth: []
+      tags:
+      - Blood Requests
+  /blood-requests/{id}:
+    get:
+      description: Get a blood request by ID
+      parameters:
+      - description: Blood Request ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/helper.BloodRequestSwaggoResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/helper.ErrorSwaggoResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/helper.ErrorSwaggoResponse'
+        "422":
+          description: Unprocessable Content
+          schema:
+            $ref: '#/definitions/helper.ErrorSwaggoResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/helper.ErrorSwaggoResponse'
+      security:
+      - BearerAuth: []
+      summary: Get blood request detail
+      tags:
+      - Blood Requests
+  /blood-requests/{id}/cancel:
+    put:
+      description: Cancel a blood request owned by the authenticated requester
+      parameters:
+      - description: Blood Request ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Blood request cancelled
+          schema:
+            $ref: '#/definitions/helper.BloodRequestSwaggoResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/helper.ErrorSwaggoResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/helper.ErrorSwaggoResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/helper.ErrorSwaggoResponse'
+        "422":
+          description: Unprocessable Content
+          schema:
+            $ref: '#/definitions/helper.ErrorSwaggoResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/helper.ErrorSwaggoResponse'
+      security:
+      - BearerAuth: []
+      summary: Cancel blood request
+      tags:
+      - Blood Requests
+  /blood-requests/{id}/invite/{donorId}:
+    post:
+      description: Invite a donor to a blood request
+      parameters:
+      - description: Blood Request ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Donor ID
+        in: path
+        name: donorId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Donor invited successfully
+          schema:
+            $ref: '#/definitions/helper.DonorMatchSwaggoResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/helper.ErrorSwaggoResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/helper.ErrorSwaggoResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/helper.ErrorSwaggoResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/helper.ErrorSwaggoResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/helper.ErrorSwaggoResponse'
+      security:
+      - BearerAuth: []
+      summary: Invite donor
+      tags:
+      - Donor Matches
+  /blood-requests/{id}/matches:
+    get:
+      description: Get donor matches for a blood request
+      parameters:
+      - description: Blood Request ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/helper.DonorMatchListSwaggoResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/helper.ErrorSwaggoResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/helper.ErrorSwaggoResponse'
+        "422":
+          description: Unprocessable Content
+          schema:
+            $ref: '#/definitions/helper.ErrorSwaggoResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/helper.ErrorSwaggoResponse'
+      security:
+      - BearerAuth: []
+      summary: Get donor matches
+      tags:
+      - Blood Requests
+  /donations:
+    post:
+      consumes:
+      - application/json
+      description: Create a pending donation from an accepted donor match
+      parameters:
+      - description: Donation data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/domain.DonationReq'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Donation created
+          schema:
+            $ref: '#/definitions/helper.DonationSwaggoResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/helper.ErrorSwaggoResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/helper.ErrorSwaggoResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/helper.ErrorSwaggoResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/helper.ErrorSwaggoResponse'
+      security:
+      - BearerAuth: []
+      summary: Create donation
+      tags:
+      - Donations
+  /donations/{id}/complete:
+    patch:
+      description: Complete a pending donation and confirm it by the requester
+      parameters:
+      - description: Donation ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Donation completed
+          schema:
+            $ref: '#/definitions/helper.DonationSwaggoResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/helper.ErrorSwaggoResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/helper.ErrorSwaggoResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/helper.ErrorSwaggoResponse'
+        "422":
+          description: Unprocessable Content
+          schema:
+            $ref: '#/definitions/helper.ErrorSwaggoResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/helper.ErrorSwaggoResponse'
+      security:
+      - BearerAuth: []
+      summary: Complete donation
+      tags:
+      - Donations
+  /donor-matches:
+    get:
+      description: Get donor matches from blood requests owned by the authenticated
+        requester
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/helper.DonorMatchListSwaggoResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/helper.ErrorSwaggoResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/helper.ErrorSwaggoResponse'
+      security:
+      - BearerAuth: []
+      summary: Get donor matches for requester
+      tags:
+      - Donor Matches
+  /donor-matches/{id}/accept:
+    patch:
+      description: Accept donor invitation, validate blood request quantity, update
+        distance, and create a pending donation
+      parameters:
+      - description: Donor Match ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Invitation accepted
+          schema:
+            $ref: '#/definitions/helper.DonorMatchSwaggoResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/helper.ErrorSwaggoResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/helper.ErrorSwaggoResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/helper.ErrorSwaggoResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/helper.ErrorSwaggoResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/helper.ErrorSwaggoResponse'
+      security:
+      - BearerAuth: []
+      summary: Accept donor invitation
+      tags:
+      - Donor Matches
+  /donor-matches/{id}/decline:
+    patch:
+      description: Decline a donor match invitation
+      parameters:
+      - description: Donor Match ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Invitation declined
+          schema:
+            $ref: '#/definitions/helper.DonorMatchSwaggoResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/helper.ErrorSwaggoResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/helper.ErrorSwaggoResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/helper.ErrorSwaggoResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/helper.ErrorSwaggoResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/helper.ErrorSwaggoResponse'
+      security:
+      - BearerAuth: []
+      summary: Decline donor invitation
+      tags:
+      - Donor Matches
+  /donor-matches/{id}/route:
+    get:
+      description: Get route information for a donor match using Geoapify
+      parameters:
+      - description: Donor Match ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/helper.GeoapifyRouteSwaggoResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/helper.ErrorSwaggoResponse'
+        "422":
+          description: Unprocessable Content
+          schema:
+            $ref: '#/definitions/helper.ErrorSwaggoResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/helper.ErrorSwaggoResponse'
+      security:
+      - BearerAuth: []
+      summary: Get route for donor match
+      tags:
+      - Geoapify
+  /hospitals:
+    get:
+      description: Get list of hospitals from Geoapify based on city
+      parameters:
+      - description: City name
+        example: Bekasi
+        in: query
+        name: city
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/helper.GeoapifyHospitalListSwaggoResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/helper.ErrorSwaggoResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/helper.ErrorSwaggoResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/helper.ErrorSwaggoResponse'
+      security:
+      - BearerAuth: []
+      summary: Get hospitals by city
+      tags:
+      - Geoapify
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

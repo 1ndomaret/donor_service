@@ -22,6 +22,21 @@ func NewDonorMatchHandler(
 	}
 }
 
+// Invite godoc
+// @Summary Invite donor
+// @Description Invite a donor to a blood request
+// @Tags Donor Matches
+// @Produce json
+// @Security BearerAuth
+// @Param id path string true "Blood Request ID"
+// @Param donorId path string true "Donor ID"
+// @Success 200 {object} helper.DonorMatchSwaggoResponse "Donor invited successfully"
+// @Failure 400 {object} helper.ErrorSwaggoResponse "Bad Request"
+// @Failure 401 {object} helper.ErrorSwaggoResponse "Unauthorized"
+// @Failure 403 {object} helper.ErrorSwaggoResponse "Forbidden"
+// @Failure 404 {object} helper.ErrorSwaggoResponse "Not Found"
+// @Failure 500 {object} helper.ErrorSwaggoResponse "Internal Server Error"
+// @Router /blood-requests/{id}/invite/{donorId} [post]
 func (h *DonorMatchHandler) Invite(c *echo.Context) error {
 	requesterID, ok := c.Get("user_id").(uuid.UUID)
 	if !ok {
@@ -67,6 +82,20 @@ func (h *DonorMatchHandler) Invite(c *echo.Context) error {
 	)
 }
 
+// Accept godoc
+// @Summary Accept donor invitation
+// @Description Accept donor invitation, validate blood request quantity, update distance, and create a pending donation
+// @Tags Donor Matches
+// @Produce json
+// @Security BearerAuth
+// @Param id path string true "Donor Match ID"
+// @Success 200 {object} helper.DonorMatchSwaggoResponse "Invitation accepted"
+// @Failure 400 {object} helper.ErrorSwaggoResponse "Bad Request"
+// @Failure 401 {object} helper.ErrorSwaggoResponse "Unauthorized"
+// @Failure 403 {object} helper.ErrorSwaggoResponse "Forbidden"
+// @Failure 404 {object} helper.ErrorSwaggoResponse "Not Found"
+// @Failure 500 {object} helper.ErrorSwaggoResponse "Internal Server Error"
+// @Router /donor-matches/{id}/accept [patch]
 func (h *DonorMatchHandler) Accept(c *echo.Context) error {
 	donorID, ok := c.Get("donor_id").(uuid.UUID)
 	if !ok {
@@ -93,6 +122,9 @@ func (h *DonorMatchHandler) Accept(c *echo.Context) error {
 		case errors.Is(err, domain.ErrInvalidMatchStatus):
 			return helper.BadRequest(c, err.Error())
 
+		case errors.Is(err, domain.ErrBloodRequestFulfilled):
+			return helper.BadRequest(c, err.Error())
+
 		default:
 			return helper.InternalServerError(c, err.Error())
 		}
@@ -106,6 +138,20 @@ func (h *DonorMatchHandler) Accept(c *echo.Context) error {
 	)
 }
 
+// Decline godoc
+// @Summary Decline donor invitation
+// @Description Decline a donor match invitation
+// @Tags Donor Matches
+// @Produce json
+// @Security BearerAuth
+// @Param id path string true "Donor Match ID"
+// @Success 200 {object} helper.DonorMatchSwaggoResponse "Invitation declined"
+// @Failure 400 {object} helper.ErrorSwaggoResponse "Bad Request"
+// @Failure 401 {object} helper.ErrorSwaggoResponse "Unauthorized"
+// @Failure 403 {object} helper.ErrorSwaggoResponse "Forbidden"
+// @Failure 404 {object} helper.ErrorSwaggoResponse "Not Found"
+// @Failure 500 {object} helper.ErrorSwaggoResponse "Internal Server Error"
+// @Router /donor-matches/{id}/decline [patch]
 func (h *DonorMatchHandler) Decline(c *echo.Context) error {
 	donorID, ok := c.Get("donor_id").(uuid.UUID)
 	if !ok {
@@ -132,9 +178,6 @@ func (h *DonorMatchHandler) Decline(c *echo.Context) error {
 		case errors.Is(err, domain.ErrInvalidMatchStatus):
 			return helper.BadRequest(c, err.Error())
 
-		case errors.Is(err, domain.ErrBloodRequestFulfilled):
-			return helper.BadRequest(c, err.Error())
-
 		default:
 			return helper.InternalServerError(c, err.Error())
 		}
@@ -148,6 +191,16 @@ func (h *DonorMatchHandler) Decline(c *echo.Context) error {
 	)
 }
 
+// GetByRequesterID godoc
+// @Summary Get donor matches for requester
+// @Description Get donor matches from blood requests owned by the authenticated requester
+// @Tags Donor Matches
+// @Produce json
+// @Security BearerAuth
+// @Success 200 {object} helper.DonorMatchListSwaggoResponse "Success"
+// @Failure 401 {object} helper.ErrorSwaggoResponse "Unauthorized"
+// @Failure 500 {object} helper.ErrorSwaggoResponse "Internal Server Error"
+// @Router /donor-matches [get]
 func (h *DonorMatchHandler) GetByRequesterID(c *echo.Context) error {
 	requesterID, ok := c.Get("user_id").(uuid.UUID)
 	if !ok {

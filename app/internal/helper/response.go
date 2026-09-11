@@ -1,6 +1,11 @@
 package helper
 
-import "github.com/labstack/echo/v5"
+import (
+	"donor-service/app/internal/domain"
+	"donor-service/app/internal/entity"
+
+	"github.com/labstack/echo/v5"
+)
 
 type ErrorResponse struct {
 	ErrorCode string `json:"error_code"`
@@ -15,10 +20,57 @@ type Response struct {
 	Error   *ErrorResponse `json:"error,omitempty"`
 }
 
-type SwaggoResponse struct {
-	Status  string `json:"status"`
-	Message string `json:"message,omitempty"`
-	Data    any    `json:"data,omitempty"`
+type DonorMatchSwaggoResponse struct {
+	Status  string            `json:"status"`
+	Message string            `json:"message,omitempty"`
+	Data    entity.DonorMatch `json:"data"`
+}
+
+type DonorMatchListSwaggoResponse struct {
+	Status  string              `json:"status"`
+	Message string              `json:"message,omitempty"`
+	Data    []entity.DonorMatch `json:"data"`
+}
+
+type BloodRequestSwaggoResponse struct {
+	Status  string              `json:"status"`
+	Message string              `json:"message,omitempty"`
+	Data    entity.BloodRequest `json:"data"`
+}
+
+type BloodRequestListSwaggoResponse struct {
+	Status  string                `json:"status"`
+	Message string                `json:"message,omitempty"`
+	Data    []entity.BloodRequest `json:"data"`
+}
+
+type DonationSwaggoResponse struct {
+	Status  string          `json:"status"`
+	Message string          `json:"message,omitempty"`
+	Data    entity.Donation `json:"data"`
+}
+
+type GeoapifyHospitalListSwaggoResponse struct {
+	Status  string                    `json:"status"`
+	Message string                    `json:"message,omitempty"`
+	Data    []domain.GeoapifyHospital `json:"data"`
+}
+
+type GeoapifyRouteSwaggoResponse struct {
+	Status  string               `json:"status"`
+	Message string               `json:"message,omitempty"`
+	Data    domain.GeoapifyRoute `json:"data"`
+}
+
+type ErrorDetailSwaggoResponse struct {
+	ErrorCode string `json:"error_code"`
+	Message   string `json:"message"`
+	Detail    string `json:"detail,omitempty"`
+}
+
+type ErrorSwaggoResponse struct {
+	Status string                    `json:"status"`
+	Error  ErrorDetailSwaggoResponse `json:"error"`
 }
 
 func Success(c *echo.Context, httpCode int, msg string, data any) error {
