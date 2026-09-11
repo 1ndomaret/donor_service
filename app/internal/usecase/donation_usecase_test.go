@@ -1014,3 +1014,86 @@ func TestDonationUsecase_Completed_Success(t *testing.T) {
 	donationRepo.AssertExpectations(t)
 	bloodReqRepo.AssertExpectations(t)
 }
+
+func (m *MockDonationRepository) FindAllByRequesterID(
+	ctx context.Context,
+	requesterID uuid.UUID,
+) ([]entity.Donation, error) {
+	args := m.Called(ctx, requesterID)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).([]entity.Donation), args.Error(1)
+}
+
+func TestDonationUsecase_FindAll_Success(t *testing.T) {
+	donationRepo := new(MockDonationRepository)
+	donorMatchRepo := new(MockDonorMatchRepository)
+	bloodReqRepo := new(MockBloodRequestRepository)
+
+	requesterID := uuid.New()
+
+	expected := []entity.Donation{
+		{
+			ID:     uuid.New(),
+			Status: "pending",
+		},
+		{
+			ID:     uuid.New(),
+			Status: "completed",
+		},
+	}
+
+	donationRepo.
+		On(
+			"FindAllByRequesterID",
+			mock.Anything,
+			requesterID,
+		).
+		Return(expected, nil).
+		Once()
+
+	uc := NewDonationUsecase(
+		donationRepo,
+		donorMatchRepo,
+		bloodReqRepo,
+	)
+
+	result, err := uc.FindAll(requesterID)
+
+	require.NoError(t, err)
+	assert.Equal(t, expected, result)
+
+	donationRepo.AssertExpectations(t)
+}
+
+func TestDonationUsecase_FindAll_RepositoryError(t *testing.T) {
+	donationRepo := new(MockDonationRepository)
+	donorMatchRepo := new(MockDonorMatchRepository)
+	bloodReqRepo := new(MockBloodRequestRepository)
+
+	requesterID := uuid.New()
+	expectedErr := errors.New("failed to get donations")
+
+	donationRepo.
+		On(
+			"FindAllByRequesterID",
+			mock.Anything,
+			requesterID,
+		).
+		Return(nil, expectedErr).
+		Once()
+
+	uc := NewDonationUsecase(
+		donationRepo,
+		donorMatchRepo,
+		bloodReqRepo,
+	)
+
+	result, err := uc.FindAll(requesterID)
+
+	assert.Nil(t, result)
+	assert.ErrorIs(t, err, expectedErr)
+}

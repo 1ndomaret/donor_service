@@ -83,3 +83,29 @@ func (r *donationRepository) Completed(
 
 	return nil
 }
+
+func (r *donationRepository) FindAllByRequesterID(
+	ctx context.Context,
+	requesterID uuid.UUID,
+) ([]entity.Donation, error) {
+	var donations []entity.Donation
+
+	subQuery := r.db.
+		WithContext(ctx).
+		Model(&entity.BloodRequest{}).
+		Select("id").
+		Where("requester_id = ?", requesterID)
+
+	err := r.db.
+		WithContext(ctx).
+		Where("blood_request_id IN (?)", subQuery).
+		Order("created_at DESC").
+		Find(&donations).
+		Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	return donations, nil
+}

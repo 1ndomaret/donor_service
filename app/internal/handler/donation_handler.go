@@ -156,3 +156,43 @@ func (h *DonationHandler) Completed(
 		donation,
 	)
 }
+
+// FindAll godoc
+// @Summary Get donations
+// @Description Get donations from blood requests owned by the logged-in requester
+// @Tags Donations
+// @Produce json
+// @Security BearerAuth
+// @Success 200 {object} helper.DonationListSwaggoResponse "Donation list"
+// @Failure 401 {object} helper.ErrorSwaggoResponse "Unauthorized"
+// @Failure 500 {object} helper.ErrorSwaggoResponse "Internal Server Error"
+// @Router /donations [get]
+func (h *DonationHandler) FindAll(
+	c *echo.Context,
+) error {
+
+	requesterID, ok := c.Get("user_id").(uuid.UUID)
+	if !ok {
+		return helper.Unauthorized(
+			c,
+			"invalid or missing token",
+		)
+	}
+
+	donations, err := h.donationUsecase.FindAll(
+		requesterID,
+	)
+	if err != nil {
+		return helper.InternalServerError(
+			c,
+			err.Error(),
+		)
+	}
+
+	return helper.Success(
+		c,
+		200,
+		"Success",
+		donations,
+	)
+}
