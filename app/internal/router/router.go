@@ -33,6 +33,7 @@ func Register(e *echo.Echo,
 
 	private.POST("/donations", donationHandler.Create)
 	private.PATCH("/donations/:id/complete", donationHandler.Completed)
+	private.GET("/donations", donationHandler.FindAll)
 
 	private.GET("/hospitals", geoapifyHandler.GetGeoapifyHospitals)
 	private.GET("/donor-matches/:id/route", geoapifyHandler.GetGeoapifyRoute)
