@@ -8,7 +8,7 @@ import (
 
 type BloodRequest struct {
 	ID                 uuid.UUID `gorm:"type:uuid;primaryKey" json:"id"`
-	RequesterID        uuid.UUID `gorm:"type:uuid;Index;not null" json:"requester_id"`
+	RequesterID        uuid.UUID `gorm:"type:uuid;index;not null" json:"requester_id"`
 	BloodType          string    `gorm:"not null" json:"blood_type"`
 	Quantity           int       `gorm:"not null" json:"quantity"`
 	Urgency            string    `gorm:"not null" json:"urgency"`
@@ -23,5 +23,5 @@ type BloodRequest struct {
 	CreatedAt          time.Time `json:"created_at"`
 	UpdatedAt          time.Time `json:"updated_at"`
 
-	// DonorMatches []DonorMatch `gorm:"foreignKey:DonorMatchID;references:ID" json:"donor_matches"`
+	DonorMatches []DonorMatch `gorm:"foreignKey:BloodRequestID;references:ID" json:"donor_matches"`
 }

@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"donor-service/app/internal/domain"
+	"donor-service/app/internal/dto"
 	"donor-service/app/internal/entity"
 
 	"github.com/google/uuid"
@@ -14,17 +15,23 @@ type donorMatchUsecase struct {
 	donorMatchRepository domain.DonorMatchRepository
 	bloodReqRepo         domain.BloodRequestRepository
 	userServiceRepo      domain.UserServiceHttpRepo
+	geoapifyRepo         domain.GeoapifyRepository
+	donationRepository   domain.DonationRepository
 }
 
 func NewDonorMatchUsecase(
 	donorMatchRepository domain.DonorMatchRepository,
 	bloodReqRepo domain.BloodRequestRepository,
 	userServiceRepo domain.UserServiceHttpRepo,
+	geoapifyRepo domain.GeoapifyRepository,
+	donationRepository domain.DonationRepository,
 ) domain.DonorMatchUsecase {
 	return &donorMatchUsecase{
 		donorMatchRepository: donorMatchRepository,
 		bloodReqRepo:         bloodReqRepo,
 		userServiceRepo:      userServiceRepo,
+		geoapifyRepo:         geoapifyRepo,
+		donationRepository:   donationRepository,
 	}
 }
 
@@ -113,6 +120,65 @@ func (u *donorMatchUsecase) Accept(
 		return nil, domain.ErrInvalidMatchStatus
 	}
 
+	bloodRequest, err := u.bloodReqRepo.GetById(
+		ctx,
+		donorMatch.BloodRequestID,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	acceptedCount, err := u.donorMatchRepository.CountAccepted(
+		ctx,
+		donorMatch.BloodRequestID,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	if acceptedCount >= int64(bloodRequest.Quantity) {
+		return nil, domain.ErrBloodRequestFulfilled
+	}
+
+	donorProfile, err := u.userServiceRepo.GetDonorProfile(
+		ctx,
+		donorMatch.DonorID,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	routeReq := dto.GeoapifyRoutingRequest{
+		OriginLat:      donorProfile.Latitude,
+		OriginLon:      donorProfile.Longitude,
+		DestinationLat: bloodRequest.Latitude,
+		DestinationLon: bloodRequest.Longitude,
+	}
+
+	route, err := u.geoapifyRepo.GetGeoapifyRoute(
+		ctx,
+		&routeReq,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	distanceKM := route.Distance
+
+	if route.DistanceUnits == "meters" {
+		distanceKM = route.Distance / 1000
+	}
+
+	if err := u.donorMatchRepository.UpdateDistance(
+		ctx,
+		donorMatch.ID,
+		distanceKM,
+	); err != nil {
+		return nil, err
+	}
+
+	donorMatch.DistanceKM = distanceKM
+
 	if err := u.donorMatchRepository.UpdateStatus(
 		ctx,
 		donorMatch.ID,
@@ -122,6 +188,21 @@ func (u *donorMatchUsecase) Accept(
 	}
 
 	donorMatch.Status = "accepted"
+
+	donation := &entity.Donation{
+		ID:             uuid.New(),
+		BloodRequestID: donorMatch.BloodRequestID,
+		DonorID:        donorMatch.DonorID,
+		DonorMatchID:   donorMatch.ID,
+		Status:         "pending",
+	}
+
+	if err := u.donationRepository.Create(
+		ctx,
+		donation,
+	); err != nil {
+		return nil, err
+	}
 
 	return donorMatch, nil
 }
@@ -164,4 +245,19 @@ func (u *donorMatchUsecase) Decline(
 	donorMatch.Status = "declined"
 
 	return donorMatch, nil
+}
+
+func (u *donorMatchUsecase) GetByRequesterID(
+	requesterID uuid.UUID,
+) ([]entity.DonorMatch, error) {
+	ctx, cancel := context.WithTimeout(
+		context.TODO(),
+		donorMatchTimeout,
+	)
+	defer cancel()
+
+	return u.donorMatchRepository.GetByRequesterID(
+		ctx,
+		requesterID,
+	)
 }
