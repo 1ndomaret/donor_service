@@ -12,6 +12,7 @@ type ServicesConfig struct {
 	UserPort       string
 	UserURL        string
 	GeoapifyAPIKey string
+	ServiceToken   string
 }
 
 func ServicesSecret() ServicesConfig {
@@ -25,5 +26,6 @@ func ServicesSecret() ServicesConfig {
 		UserPort:       os.Getenv("USER_PORT"),
 		UserURL:        os.Getenv("USER_URL"),
 		GeoapifyAPIKey: os.Getenv("GEOAPIFY_API_KEY"),
+		ServiceToken:   os.Getenv("SERVICE_TOKEN"),
 	}
 }

@@ -16,7 +16,8 @@ import (
 )
 
 type userServiceHttpRepo struct {
-	client *resty.Client
+	client       *resty.Client
+	serviceToken string
 }
 
 func NewUserServiceHttpRepo(cfg config.ServicesConfig) domain.UserServiceHttpRepo {
@@ -28,7 +29,8 @@ func NewUserServiceHttpRepo(cfg config.ServicesConfig) domain.UserServiceHttpRep
 	client.SetTimeout(10 * time.Second)
 
 	return &userServiceHttpRepo{
-		client: client,
+		client:       client,
+		serviceToken: cfg.ServiceToken,
 	}
 }
 
@@ -43,8 +45,13 @@ func (r *userServiceHttpRepo) SearchMatches(ctx context.Context, token string, r
 		queryParams["city"] = req.City
 	}
 
+	authToken := token
+	if authToken == "" {
+		authToken = r.serviceToken
+	}
+
 	res, err := r.client.R().
-		SetHeader("Authorization", token).SetContext(ctx).SetQueryParams(queryParams).
+		SetHeader("Authorization", authToken).SetContext(ctx).SetQueryParams(queryParams).
 		SetResult(&apiRes).
 		Get("/api/v1/users/donor-profile/search")
 	if err != nil {
@@ -64,7 +71,7 @@ func (r *userServiceHttpRepo) SearchMatches(ctx context.Context, token string, r
 func (r *userServiceHttpRepo) GetDonorProfile(ctx context.Context, donor_id uuid.UUID) (*entity.DonorProfile, error) {
 	var apiRes dto.GetDonorResponse
 	res, err := r.client.R().
-		SetContext(ctx).
+		SetHeader("Authorization", r.serviceToken).SetContext(ctx).
 		SetResult(&apiRes).
 		Get("/api/v1/users/donor-profile/" + donor_id.String())
 	if err != nil {
