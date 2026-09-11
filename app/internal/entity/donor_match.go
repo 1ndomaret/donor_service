@@ -8,8 +8,8 @@ import (
 
 type DonorMatch struct {
 	ID             uuid.UUID `gorm:"type:uuid;primaryKey" json:"id"`
-	BloodRequestID uuid.UUID `gorm:"type:uuid;not null;uniqueIndex:idx_blood_request_donor" json:"blood_request_id"`
-	DonorID        uuid.UUID `gorm:"type:uuid;not null;uniqueIndex:idx_blood_request_donor" json:"donor_id"`
+	BloodRequestID uuid.UUID `gorm:"type:uuid;not null;uniqueIndex:idx_blood_request_donor,priority:1" json:"blood_request_id"`
+	DonorID        uuid.UUID `gorm:"type:uuid;not null;uniqueIndex:idx_blood_request_donor,priority:2" json:"donor_id"`
 	Status         string    `gorm:"not null" json:"status"`
 	DistanceKM     float64   `json:"distance_km"`
 	CreatedAt      time.Time `json:"created_at"`

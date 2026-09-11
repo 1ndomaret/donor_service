@@ -94,7 +94,6 @@ func (r *bloodRequestRepository) GetById(ctx context.Context, bloodRequestID uui
 
 func (r *bloodRequestRepository) CreateMatches(ctx context.Context, reqID uuid.UUID, donors []entity.DonorProfile) error {
 	var matches []entity.DonorMatch
-
 	for _, donor := range donors {
 		matches = append(matches, entity.DonorMatch{
 			ID:             uuid.New(),
@@ -102,6 +101,7 @@ func (r *bloodRequestRepository) CreateMatches(ctx context.Context, reqID uuid.U
 			DonorID:        donor.ID,
 			Status:         "invited",
 			CreatedAt:      time.Now(),
+			UpdatedAt:      time.Now(),
 		})
 	}
 
