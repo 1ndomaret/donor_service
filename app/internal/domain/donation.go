@@ -39,6 +39,11 @@ type DonationRepository interface {
 		confirmedBy uuid.UUID,
 		donationDate time.Time,
 	) error
+
+	FindAllByRequesterID(
+		ctx context.Context,
+		requesterID uuid.UUID,
+	) ([]entity.Donation, error)
 }
 
 type DonationUsecase interface {
@@ -51,4 +56,8 @@ type DonationUsecase interface {
 		requesterID uuid.UUID,
 		donationID uuid.UUID,
 	) (*entity.Donation, error)
+
+	FindAll(
+		requesterID uuid.UUID,
+	) ([]entity.Donation, error)
 }

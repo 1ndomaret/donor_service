@@ -84,13 +84,24 @@ func (r *donationRepository) Completed(
 	return nil
 }
 
-func (r *donationRepository) GetByRequesterID(ctx context.Context, requesterID uuid.UUID) ([]entity.Donation, error) {
+func (r *donationRepository) FindAllByRequesterID(
+	ctx context.Context,
+	requesterID uuid.UUID,
+) ([]entity.Donation, error) {
 	var donations []entity.Donation
 
-	err := r.db.WithContext(ctx).
-		Joins("JOIN donor_matches ON donor_matches.id = donations.donor_match_id").
-		Where("donor_matches.requester_id = ?", requesterID).
-		Find(&donations).Error
+	subQuery := r.db.
+		WithContext(ctx).
+		Model(&entity.BloodRequest{}).
+		Select("id").
+		Where("requester_id = ?", requesterID)
+
+	err := r.db.
+		WithContext(ctx).
+		Where("blood_request_id IN (?)", subQuery).
+		Order("created_at DESC").
+		Find(&donations).
+		Error
 
 	if err != nil {
 		return nil, err

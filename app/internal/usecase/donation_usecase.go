@@ -139,3 +139,19 @@ func (u *donationUsecase) Completed(
 
 	return donation, nil
 }
+
+func (u *donationUsecase) FindAll(
+	requesterID uuid.UUID,
+) ([]entity.Donation, error) {
+
+	ctx, cancel := context.WithTimeout(
+		context.TODO(),
+		donationTimeout,
+	)
+	defer cancel()
+
+	return u.donationRepo.FindAllByRequesterID(
+		ctx,
+		requesterID,
+	)
+}
